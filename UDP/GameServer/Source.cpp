@@ -6,6 +6,18 @@
 using namespace std;
 using namespace sf;
 
+enum PacketType
+{
+	PT_EMPTY = 0,
+	PT_HELLO = 1,
+	PT_WELCOME = 2,
+	PT_FULL = 3,
+	PT_TRYPOSITION = 4,
+	PT_POSITION = 5,
+	PT_DISCONNECT = 6,
+	PT_RESETPLAYER = 7
+};
+
 struct Direction {
 public:
 	IpAddress ip;
