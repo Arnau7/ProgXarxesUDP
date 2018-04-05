@@ -143,6 +143,10 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="InputMemoryBitStream.h" />
+    <ClInclude Include="InputMemoryStream.h" />
+    <ClInclude Include="OutputMemoryBitStream.h" />
+    <ClInclude Include="OutputMemoryStream.h" />
     <ClInclude Include="PlayerInfo.h" />
   </ItemGroup>
   <ItemGroup>

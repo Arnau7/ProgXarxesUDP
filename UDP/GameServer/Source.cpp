@@ -41,12 +41,12 @@ int main()
 	for (int i = 0; i < 4; i++) {
 		IpAddress ip;
 		unsigned short port;
-		string header;
+		int8_t header;
 
 		if(serverSocket.receive(pack, ip, port) == Socket::Done) {
 			string nick;
 			pack >> header;
-			if (header == "HELLO") {
+			if (header == PT_HELLO) {
 				pack >> nick;
 				cout << "We have recived the player: " << nick << endl;
 				aClientsDir.push_back(Direction(ip, port, nick));
@@ -59,7 +59,7 @@ int main()
 				}
 				
 				Packet pck;
-				string welcome = "WELCOME";
+				int8_t welcome = ((int8_t)PacketType::PT_WELCOME);
 				int plPosX = (0 + (rand() % static_cast<int>(10 - 0 + 1)));
 				int plPosY = (0 + (rand() % static_cast<int>(10 - 0 + 1)));
 

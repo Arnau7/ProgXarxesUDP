@@ -21,6 +21,18 @@
     <ClInclude Include="PlayerInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="InputMemoryBitStream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="InputMemoryStream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OutputMemoryBitStream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OutputMemoryStream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PlayerInfo.cpp">

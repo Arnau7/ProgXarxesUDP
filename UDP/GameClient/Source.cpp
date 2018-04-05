@@ -43,7 +43,7 @@ int main()
 	IpAddress serverIp = "127.0.0.1";
 	unsigned short port = 50000;
 	Packet pack;
-	string header = "HELLO";
+	int8_t header = (int8_t)PacketType::PT_HELLO;
 	pack << header << nickname;
 	aSocket.send(pack, serverIp, port);
 	Packet newPack;
