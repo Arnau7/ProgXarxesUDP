@@ -17,7 +17,7 @@
 
 #define MAX 100
 #define SIZE_TABLERO 81
-#define SIZE_FILA_TABLERO 8
+#define SIZE_FILA_TABLERO 11
 #define LADO_CASILLA 64
 #define RADIO_AVATAR 25.f
 #define OFFSET_AVATAR 5
@@ -99,7 +99,7 @@ public:
 	Direction() {}
 };
 
-void DibujaSFML()
+/*void DibujaSFML()
 {
 	sf::Vector2f casillaOrigen, casillaDestino;
 	bool casillaMarcada = false;
@@ -167,9 +167,9 @@ void DibujaSFML()
 
 		//A partir de aquí es para pintar por pantalla
 		//Este FOR es para el tablero
-		for (int i = 0; i<8; i++)
+		for (int i = 0; i<11; i++)
 		{
-			for (int j = 0; j<8; j++)
+			for (int j = 0; j<11; j++)
 			{
 				sf::RectangleShape rectBlanco(sf::Vector2f(LADO_CASILLA, LADO_CASILLA));
 				rectBlanco.setFillColor(sf::Color::White);
@@ -203,7 +203,7 @@ void DibujaSFML()
 		window.draw(shapeRaton);
 
 		//Pintamos los cuatro circulitos del gato
-		/*sf::CircleShape shapeGato(RADIO_AVATAR);
+		sf::CircleShape shapeGato(RADIO_AVATAR);
 		shapeGato.setFillColor(sf::Color::Red);
 
 		sf::Vector2f positionGato1(1.f, 0.f);
@@ -228,14 +228,14 @@ void DibujaSFML()
 		positionGato4 = BoardToWindows(positionGato4);
 		shapeGato.setPosition(positionGato4);
 
-		window.draw(shapeGato);*/
+		window.draw(shapeGato);
 
 
 		if (!tienesTurno)
 		{
 			//Si no tengo el turno, pinto un letrerito de "Esperando..."
 			sf::Font font;
-			std::string pathFont = "liberation_sans/LiberationSans-Regular.ttf";
+			std::string pathFont = "arial.ttf";
 			if (!font.loadFromFile(pathFont))
 			{
 				std::cout << "No se pudo cargar la fuente" << std::endl;
@@ -266,9 +266,9 @@ void DibujaSFML()
 		window.display();
 	}
 
-}
+}*/
 
-void recieveMessage(UdpSocket* socket, string nickname) {
+void receieveMessage(UdpSocket* socket, string nickname) {
 	IpAddress ip;
 	unsigned short port;
 	Packet newPack;
@@ -313,7 +313,7 @@ int main()
 
 	Clock clockCounter;
 
-	thread t(recieveMessage, aSocket, nickname);
+	thread t(receieveMessage, aSocket, nickname);
 
 	//thread r(rrr);
 	do {
@@ -455,7 +455,7 @@ int main()
 		{
 			//Si no tengo el turno, pinto un letrerito de "Esperando..."
 			sf::Font font;
-			std::string pathFont = "liberation_sans/LiberationSans-Regular.ttf";
+			std::string pathFont = "arial.ttf";
 			if (!font.loadFromFile(pathFont))
 			{
 				std::cout << "No se pudo cargar la fuente" << std::endl;

@@ -32,7 +32,7 @@ vector<Direction> aClientsDir;
 map<string, Direction> aPlayers;
 int playersOnline = 0;
 
-void recieveMessage(UdpSocket* socket) {
+void receieveMessage(UdpSocket* socket) {
 
 	Packet pack;
 	IpAddress ip;
@@ -51,7 +51,7 @@ void recieveMessage(UdpSocket* socket) {
 					if (aPlayers.find(nick) == aPlayers.end()) {
 						aClientsDir.push_back(Direction(ip, port, nick));
 						aPlayers.insert(pair<string, Direction>(nick, aClientsDir[playersOnline]));
-						cout << "We have recived the player: " << nick << endl;
+						cout << "We have received the player: " << nick << endl;
 
 						Packet pck;
 						int8_t welcome = ((int8_t)PacketType::PT_WELCOME);
@@ -119,7 +119,7 @@ int main()
 	serverSocket->bind(50000);
 	Packet pack;
 
-	thread rM(recieveMessage, serverSocket);
+	thread rM(receieveMessage, serverSocket);
 
 	return 0;
 }
