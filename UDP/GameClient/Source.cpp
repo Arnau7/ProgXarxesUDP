@@ -31,7 +31,7 @@ char tablero[SIZE_TABLERO];
 * Si vale true --> nos permite marcar casilla con el mouse
 * Si vale false --> No podemos interactuar con el tablero y aparece un letrero de "esperando"
 */
-bool tienesTurno = true;
+bool tienesTurno = false;
 
 /**
 * Ahora mismo no tiene efecto, pero luego lo necesitarás para validar los movimientos
@@ -291,6 +291,8 @@ int main()
 		}
 	}
 
+	//-----START
+
 	sf::Vector2f casillaOrigen, casillaDestino;
 	bool casillaMarcada = false;
 
@@ -316,6 +318,7 @@ int main()
 					{
 						casillaOrigen = TransformaCoordenadaACasilla(x, y);
 						casillaMarcada = true;
+						
 						//TODO: Comprobar que la casilla marcada coincide con las posición de la moneda (si le toca a la moneda)
 
 					}
@@ -382,7 +385,8 @@ int main()
 				}
 			}
 		}
-		//----WELCOME
+		//-----WELCOME
+
 		//TODO: Para pintar el circulito del ratón
 		sf::CircleShape shapeRaton(RADIO_AVATAR);
 		shapeRaton.setFillColor(sf::Color::Yellow);
@@ -395,15 +399,16 @@ int main()
 		sf::CircleShape shapeGato(RADIO_AVATAR);
 		shapeGato.setFillColor(sf::Color::Green);
 
-		sf::Vector2f positionGato1(posX,posY);
+		sf::Vector2f positionGato1(posX,posY); //Position given by server
 		positionGato1 = BoardToWindows(positionGato1);
 		shapeGato.setPosition(positionGato1);
 
 		window.draw(shapeGato);
 
-		//-----MOVED
+		//-----NEW PLAYER
 
 
+		//-----MOVE
 
 		if (!tienesTurno)
 		{
@@ -436,6 +441,8 @@ int main()
 				window.draw(rect);
 			}
 		}
+
+		//-----MOVED
 
 		window.display();
 	}
