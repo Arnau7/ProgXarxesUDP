@@ -60,8 +60,34 @@ int main()
 				
 				Packet pck;
 				int8_t welcome = ((int8_t)PacketType::PT_WELCOME);
-				int plPosX = (0 + (rand() % static_cast<int>(10 - 0 + 1)));
-				int plPosY = (0 + (rand() % static_cast<int>(10 - 0 + 1)));
+				//Table size goes from 0 to 7
+				int plPosX, plPosY;
+				//Top left
+				if (i == 0) 
+				{
+					/*int plPosX = (0 + (rand() % static_cast<int>(7 - 0 + 1)));
+					int plPosY = (0 + (rand() % static_cast<int>(7 - 0 + 1)));*/
+					plPosX = 0;
+					plPosY = 0;
+				}
+				//Top right
+				else if (i == 1) 
+				{
+					plPosX = 11;
+					plPosY = 0;
+				}
+				//Bot left
+				else if (i == 2)
+				{
+					plPosX = 0;
+					plPosY = 11;
+				}
+				//Bot right
+				else if (i == 3)
+				{
+					plPosX = 11;
+					plPosY = 11;
+				}
 
 				pck << welcome << i << plPosX << plPosY;
 				serverSocket.send(pck, aClientsDir[i].ip, aClientsDir[i].port);
