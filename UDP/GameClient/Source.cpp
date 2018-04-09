@@ -9,7 +9,11 @@
 #include <stdio.h>
 #include <iostream>
 #include <SFML/Graphics.hpp>
+#include <thread>
 
+
+#define SERVER_IP "127.0.0.1"
+#define SERVER_PORT 50000
 
 #define MAX 100
 #define SIZE_TABLERO 81
@@ -26,6 +30,8 @@
 
 enum TipoProceso { RATON, GATO, PADRE };
 char tablero[SIZE_TABLERO];
+
+int posX, posY, posP2X, posP2Y, posP3X, posP3Y, posP4X, posP4Y;
 
 /**
 * Si vale true --> nos permite marcar casilla con el mouse
@@ -76,11 +82,13 @@ enum PacketType
 	PT_HELLO = 1,
 	PT_WELCOME = 2,
 	PT_FULL = 3,
-	PT_TRYPOSITION = 4,
+	PT_USEDNICK = 4,
 	PT_POSITION = 5,
 	PT_DISCONNECT = 6,
 	PT_RESETPLAYER = 7
 };
+
+bool playerOnline = false;
 
 struct Direction {
 public:
@@ -90,10 +98,6 @@ public:
 	Direction(IpAddress _ip, unsigned short _port, string _nickname) : ip(_ip), port(_port), nickname(_nickname) {}
 	Direction() {}
 };
-
-void sendMessageThread(Packet pack) {
-
-}
 
 void DibujaSFML()
 {
@@ -264,31 +268,68 @@ void DibujaSFML()
 
 }
 
+void recieveMessage(UdpSocket* socket, string nickname) {
+	IpAddress ip;
+	unsigned short port;
+	Packet newPack;
+
+	cout << "Waiting" << endl;
+
+	while (true) {
+		if (socket->receive(newPack, ip, port) == Socket::Done) {
+			int8_t header;
+			newPack >> header;
+			if (header == PT_WELCOME) {
+				int rol;
+				newPack >> posX >> posY;
+				cout << " and you are in the position: " << posX << ", " << posY << endl;
+				playerOnline = true;
+			}
+			else if (header == PT_USEDNICK) {
+				// TODO the player can't ask for a new name, also he's still sending messages of hello
+				IpAddress serverIp = SERVER_IP;
+				unsigned short port = SERVER_PORT;
+				cout << "Another name: ";
+				cin >> nickname;
+				Packet pck;
+				int8_t header = (int8_t)PacketType::PT_HELLO;
+				pck << header << nickname;
+				socket->send(pck, serverIp, port);
+			}
+		}
+	}
+}
+
 int main()
 {
 	string nickname = "No Nickname";
 	cout << "Hello new player! Introduce your name please: ";
 	cin >> nickname;
 
-	int posX, posY;
-
-	UdpSocket aSocket;
+	IpAddress serverIp = SERVER_IP;
+	unsigned short port = SERVER_PORT;
+	UdpSocket* aSocket = new UdpSocket;
 	Direction serverDir;
-	IpAddress serverIp = "127.0.0.1";
-	unsigned short port = 50000;
-	Packet pack;
-	int8_t header = (int8_t)PacketType::PT_HELLO;
-	pack << header << nickname;
-	aSocket.send(pack, serverIp, port);
-	Packet newPack;
-	if (aSocket.receive(newPack, serverIp, port) == Socket::Done) {
-		int8_t header;
-		newPack >> header;
-		if (header == PT_WELCOME) {
-			int rol;
-			newPack >> rol >> posX >> posY;
-			cout << "Recived the rol: " << rol  << " and you are in the position: " << posX << ", " << posY << endl;
+
+	Clock clockCounter;
+
+	thread t(recieveMessage, aSocket, nickname);
+
+	//thread r(rrr);
+	do {
+		if (clockCounter.getElapsedTime().asMilliseconds() >= 500) {
+			Packet pack;
+			int8_t header = (int8_t)PacketType::PT_HELLO;
+			pack << header << nickname;
+			aSocket->send(pack, serverIp, port);
+			cout << "Send, time: " << clockCounter.getElapsedTime().asMilliseconds() << endl;
+			clockCounter.restart();
 		}
+	} while (!playerOnline);
+
+	cout << "All OK boiii" << endl;
+	while (true) {
+		int temp = 0;
 	}
 
 	//-----START
