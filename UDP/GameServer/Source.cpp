@@ -3,6 +3,7 @@
 #include <SFML\Graphics.hpp>
 #include <SFML\Network.hpp>
 #include <thread>
+#include <PlayerInfo.h>
 
 using namespace std;
 using namespace sf;
@@ -16,7 +17,10 @@ enum PacketType
 	PT_USEDNICK = 4,
 	PT_POSITION = 5,
 	PT_DISCONNECT = 6,
-	PT_RESETPLAYER = 7
+	PT_RESETPLAYER = 7,
+	PT_NEWPLAYER = 8,
+	PT_MOVE = 9,
+	PT_START = 10
 };
 
 struct Direction {
@@ -29,7 +33,7 @@ public:
 };
 
 vector<Direction> aClientsDir;
-map<string, Direction> aPlayers;
+map<string, PlayerInfo> aPlayers;
 int playersOnline = 0;
 
 void receieveMessage(UdpSocket* socket) {
@@ -50,51 +54,57 @@ void receieveMessage(UdpSocket* socket) {
 					cout << "A client says Hello!" << endl;
 					if (aPlayers.find(nick) == aPlayers.end()) {
 						aClientsDir.push_back(Direction(ip, port, nick));
-						aPlayers.insert(pair<string, Direction>(nick, aClientsDir[playersOnline]));
+						PlayerInfo player;
+						aPlayers[nick] = player;
 						cout << "We have received the player: " << nick << endl;
 
 						Packet pck;
 						int8_t welcome = ((int8_t)PacketType::PT_WELCOME);
 						//Table size goes from 0 to 7
-						int plPosX, plPosY;
 						//Top left
 						if (playersOnline == 0)
 						{
-							plPosX = 0;
-							plPosY = 0;
-							pck << welcome << plPosX << plPosY;
-							socket->send(pck, aClientsDir[playersOnline].ip, aClientsDir[playersOnline].port);
+							player.SetPosition(0, 0);
 						}
 						//Top right
 						else if (playersOnline == 1)
 						{
-							plPosX = 8;
-							plPosY = 0;
+							player.SetPosition(8, 0);
+
 							//Send player 2 pos to player 1
 							//Send player 1 pos to player 2
 						}
 						//Bot left
 						else if (playersOnline == 2)
 						{
-							plPosX = 0;
-							plPosY = 8;
+							player.SetPosition(0, 8);
+
 							//Send player 3 pos to player 1 and 2
 							//Send player 1, 2 pos to player 3
 						}
 						//Bot right
 						else if (playersOnline == 3)
 						{
-							plPosX = 8;
-							plPosY = 8;
+							player.SetPosition(8, 8);
+
 							//Send player 4 pos to player 1,2,3
 							//Send player 1,2,3 pos to player 4
 						}
 
-						
+						pck << welcome << player.GetX() << player.GetY();
+						socket->send(pck, aClientsDir[playersOnline].ip, aClientsDir[playersOnline].port);
 						playersOnline++;
 						if (playersOnline == 4) {
+
 							cout << "All players connected, start!" << endl;
-							// TODO send start to all players
+							Packet pckStart;
+							int8_t headerStart = (int8_t)PacketType::PT_START;
+							for (int i = 0; i < playersOnline; i++) {
+								pckStart << headerStart;
+									socket->send(pckStart, aClientsDir[i].ip, aClientsDir[i].port);
+							
+							}
+
 						}
 					}
 					else {
@@ -113,6 +123,26 @@ void receieveMessage(UdpSocket* socket) {
 					cout << "4 players online, waiting on the queue" << endl;
 				// TODO send warning, server full
 			}
+			else if (header == PacketType::PT_MOVE) 
+			{
+				int posX, posY;
+				pack >> posX >> posY;
+				if (posX <= -1)		{posX = 0;}
+				if (posY <= -1)		{posY = 0;}
+				if (posX >= 9)		{posX = 8;}
+				if (posY >= 9)		{posY = 8;}
+
+				std::cout << "Se intenta la pos " << posX << " " << posY << std::endl;
+				if ((posX >= 0 && posX <= 8) && (posY >= 0 && posY <= 8))
+				{
+					int8_t headerPos = ((int8_t)PacketType::PT_POSITION);
+					std::cout << "Se confirma la pos " << posX << " " << posY << std::endl;
+					sf::Packet pckSend;
+					pckSend << headerPos << posX << posY;
+					socket->send(pckSend, ip, port);
+				}
+			}
+				
 		}
 	}
 }

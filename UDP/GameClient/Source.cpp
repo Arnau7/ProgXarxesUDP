@@ -12,7 +12,7 @@
 #include <thread>
 
 
-#define SERVER_IP "127.0.0.1"
+#define SERVER_IP "localhost"
 #define SERVER_PORT 50000
 
 #define MAX 100
@@ -37,7 +37,7 @@ int posX, posY, posP2X, posP2Y, posP3X, posP3Y, posP4X, posP4Y;
 * Si vale true --> nos permite marcar casilla con el mouse
 * Si vale false --> No podemos interactuar con el tablero y aparece un letrero de "esperando"
 */
-bool tienesTurno = false;
+bool startGame = false;
 
 /**
 * Ahora mismo no tiene efecto, pero luego lo necesitarás para validar los movimientos
@@ -85,7 +85,10 @@ enum PacketType
 	PT_USEDNICK = 4,
 	PT_POSITION = 5,
 	PT_DISCONNECT = 6,
-	PT_RESETPLAYER = 7
+	PT_RESETPLAYER = 7,
+	PT_NEWPLAYER = 8,
+	PT_MOVE = 9,
+	PT_START = 10
 };
 
 bool playerOnline = false;
@@ -276,15 +279,21 @@ void receieveMessage(UdpSocket* socket, string nickname) {
 	cout << "Waiting" << endl;
 
 	while (true) {
+		//ALL COMMANDS TO RECEIVE FROM THE SERVER
 		if (socket->receive(newPack, ip, port) == Socket::Done) {
 			int8_t header;
 			newPack >> header;
+			//Used to asign a initial position given by the server
 			if (header == PT_WELCOME) {
 				int rol;
 				newPack >> posX >> posY;
+
+				// for i0, i coectedP
+				// pack >> posX >> posY 
 				cout << " and you are in the position: " << posX << ", " << posY << endl;
 				playerOnline = true;
 			}
+			//Used to make the player use a new nick in case it is used
 			else if (header == PT_USEDNICK) {
 				// TODO the player can't ask for a new name, also he's still sending messages of hello
 				IpAddress serverIp = SERVER_IP;
@@ -296,6 +305,22 @@ void receieveMessage(UdpSocket* socket, string nickname) {
 				pck << header << nickname;
 				socket->send(pck, serverIp, port);
 			}
+			//Used to position a new player in the map
+			else if (header == PT_NEWPLAYER)
+			{
+
+			}
+			//Used to receive server position update
+			else if (header == PT_POSITION)
+			{
+				newPack >> posX >> posY;
+				cout << "Recibo la confirmacion: " << posX << " " << posY << std::endl;
+			}
+			else if (header == PT_START) 
+			{
+				startGame = true;
+			}
+
 		}
 	}
 }
@@ -342,7 +367,6 @@ int main()
 	{
 		sf::Event event;
 
-		//Este primer WHILE es para controlar los eventos del mouse
 		while (window.pollEvent(event))
 		{
 			switch (event.type)
@@ -350,46 +374,81 @@ int main()
 			case sf::Event::Closed:
 				window.close();
 				break;
-			case sf::Event::MouseButtonPressed:
-				if (event.mouseButton.button == sf::Mouse::Left && tienesTurno)
+			case sf::Event::KeyPressed:
+				if (event.key.code == sf::Keyboard::Left)
 				{
-					int x = event.mouseButton.x;
-					int y = event.mouseButton.y;
-					if (!casillaMarcada)
-					{
-						casillaOrigen = TransformaCoordenadaACasilla(x, y);
-						casillaMarcada = true;
-						
-						//TODO: Comprobar que la casilla marcada coincide con las posición de la moneda (si le toca a la moneda)
+					int8_t header = (int8_t)PacketType::PT_MOVE;
+					sf::Packet pckLeft;
+					posX = posX - 1;
+					pckLeft << header << posX << posY;
+					aSocket->send(pckLeft, SERVER_IP, SERVER_PORT);
 
-					}
-					else
+				}
+				else if (event.key.code == sf::Keyboard::Right)
+				{
+					int8_t header = (int8_t)PacketType::PT_MOVE;
+					sf::Packet pckRight;
+					posX = posX + 1;
+					pckRight << header << posX << posY;
+					aSocket->send(pckRight, SERVER_IP, SERVER_PORT);
+				}
+				else if(event.key.code == sf::Keyboard::Up)
+				{
+					int8_t header = (int8_t)PacketType::PT_MOVE;
+					sf::Packet pckUp;
+					posY = posY - 1;
+					pckUp << header << posX << posY;
+					aSocket->send(pckUp, SERVER_IP, SERVER_PORT);
+				}
+				else if (event.key.code == sf::Keyboard::Down)
+				{
+					int8_t header = (int8_t)PacketType::PT_MOVE;
+					sf::Packet pckDown;
+					posY = posY + 1;
+					pckDown << header << posX << posY;
+					aSocket->send(pckDown, SERVER_IP, SERVER_PORT);
+				}
+				break;
+				case sf::Event::MouseButtonPressed:
+					if (event.mouseButton.button == sf::Mouse::Left && startGame)
 					{
-						casillaDestino = TransformaCoordenadaACasilla(x, y);
-						if (casillaOrigen.x == casillaDestino.x && casillaOrigen.y == casillaDestino.y)
+						int x = event.mouseButton.x;
+						int y = event.mouseButton.y;
+						if (!casillaMarcada)
 						{
-							casillaMarcada = false;
-							//Si me vuelven a picar sobre la misma casilla, la desmarco
+							casillaOrigen = TransformaCoordenadaACasilla(x, y);
+							casillaMarcada = true;
+
+							//TODO: Comprobar que la casilla marcada coincide con las posición de la moneda (si le toca a la moneda)
+
 						}
 						else
 						{
-							if (quienSoy == TipoProceso::RATON)
+							casillaDestino = TransformaCoordenadaACasilla(x, y);
+							if (casillaOrigen.x == casillaDestino.x && casillaOrigen.y == casillaDestino.y)
 							{
-								//TODO: Validar que el destino del ratón es correcto
-
-								//TODO: Si es correcto, modificar la posición del ratón y enviar las posiciones al padre
-
+								casillaMarcada = false;
+								//Si me vuelven a picar sobre la misma casilla, la desmarco
 							}
-							else if (quienSoy == TipoProceso::GATO)
+							else
 							{
-								//TODO: Validar que el destino del gato es correcto
+								if (quienSoy == TipoProceso::RATON)
+								{
+									//TODO: Validar que el destino del ratón es correcto
 
-								//TODO: Si es correcto, modificar la posición de la pieza correspondiente del gato y enviar las posiciones al padre
+									//TODO: Si es correcto, modificar la posición del ratón y enviar las posiciones al padre
+
+								}
+								else if (quienSoy == TipoProceso::GATO)
+								{
+									//TODO: Validar que el destino del gato es correcto
+
+									//TODO: Si es correcto, modificar la posición de la pieza correspondiente del gato y enviar las posiciones al padre
+								}
 							}
 						}
 					}
-				}
-				break;
+					break;
 			default:
 				break;
 
@@ -398,116 +457,67 @@ int main()
 
 		window.clear();
 
-		//A partir de aquí es para pintar por pantalla
-		//Este FOR es para el tablero
-		for (int i = 0; i<SIZE_FILA_TABLERO; i++)
-		{
-			for (int j = 0; j<SIZE_FILA_TABLERO; j++)
+		//Coin Draw
+		sf::CircleShape shapeCoin(RADIO_AVATAR);
+		shapeCoin.setFillColor(sf::Color::Yellow);
+
+		sf::Vector2f posCoin(4, 4);
+		posCoin = BoardToWindows(posCoin);
+		shapeCoin.setPosition(posCoin);
+
+		window.draw(shapeCoin);
+
+		//Player Draw
+		sf::CircleShape shapePlayer(RADIO_AVATAR);
+		shapePlayer.setFillColor(sf::Color::Green);
+
+		sf::Vector2f posPlayer(posX, posY);
+		posPlayer = BoardToWindows(posPlayer);
+		shapePlayer.setPosition(posPlayer);
+
+		window.draw(shapePlayer);
+
+
+			//-----MOVE
+
+
+			if (!startGame)
 			{
-				sf::RectangleShape rectBlanco(sf::Vector2f(LADO_CASILLA, LADO_CASILLA));
-				rectBlanco.setFillColor(sf::Color::White);
-				if (i % 2 == 0)
+				//Si no tengo el turno, pinto un letrerito de "Esperando..."
+				sf::Font font;
+				std::string pathFont = "arial.ttf";
+				if (!font.loadFromFile(pathFont))
 				{
-					//Empieza por el blanco
-					if (j % 2 == 0)
-					{
-						rectBlanco.setPosition(sf::Vector2f(i*LADO_CASILLA, j*LADO_CASILLA));
-						window.draw(rectBlanco);
-					}
+					std::cout << "No se pudo cargar la fuente" << std::endl;
 				}
-				else
+
+
+				sf::Text textEsperando("Esperando...", font);
+				textEsperando.setPosition(sf::Vector2f(180, 200));
+				textEsperando.setCharacterSize(30);
+				textEsperando.setStyle(sf::Text::Bold);
+				textEsperando.setFillColor(sf::Color::Green);
+				window.draw(textEsperando);
+			}
+		/*	else
+			{
+				//Si tengo el turno y hay una casilla marcada, la marco con un recuadro amarillo.
+				if (casillaMarcada)
 				{
-					//Empieza por el negro
-					if (j % 2 == 1)
-					{
-						rectBlanco.setPosition(sf::Vector2f(i*LADO_CASILLA, j*LADO_CASILLA));
-						window.draw(rectBlanco);
-					}
+					sf::RectangleShape rect(sf::Vector2f(LADO_CASILLA, LADO_CASILLA));
+					rect.setPosition(sf::Vector2f(casillaOrigen.x*LADO_CASILLA, casillaOrigen.y*LADO_CASILLA));
+					rect.setFillColor(sf::Color::Transparent);
+					rect.setOutlineThickness(5);
+					rect.setOutlineColor(sf::Color::Yellow);
+					window.draw(rect);
 				}
 			}
+			*/
+			//-----MOVED
+
+			window.display();
 		}
-		//-----WELCOME
-
-		//TODO: Para pintar el circulito del ratón
-		sf::CircleShape shapeRaton(RADIO_AVATAR);
-		shapeRaton.setFillColor(sf::Color::Yellow);
-		sf::Vector2f posicionRaton(4,4);
-		posicionRaton = BoardToWindows(posicionRaton);
-		shapeRaton.setPosition(posicionRaton);
-		window.draw(shapeRaton);
-
-		//Pintamos los cuatro circulitos del gato
-		sf::CircleShape shapeGato(RADIO_AVATAR);
-		shapeGato.setFillColor(sf::Color::Green);
-
-		sf::Vector2f positionGato1(posX,posY); //Position given by server
-		positionGato1 = BoardToWindows(positionGato1);
-		shapeGato.setPosition(positionGato1);
-
-		window.draw(shapeGato);
-
-		//-----NEW PLAYER
-		IpAddress ip;
-		unsigned short port;
-		Packet newPack;
-		if (aSocket->receive(newPack, ip, port) == Socket::Done) {
-			int8_t header;
-			newPack >> header;
-			if (header == PT_POSITION) {
-				int rol;
-				newPack >> posX >> posY;
-				cout << " and you are in the position: " << posX << ", " << posY << endl;
-				//playerOnline = true;
-
-				//Pintamos los cuatro circulitos del gato
-				sf::CircleShape shapeGato(RADIO_AVATAR);
-				shapeGato.setFillColor(sf::Color::Green);
-
-				sf::Vector2f positionGato1(posX, posY); //Position given by server
-				positionGato1 = BoardToWindows(positionGato1);
-				shapeGato.setPosition(positionGato1);
-
-				window.draw(shapeGato);
-			}
-
-		//-----MOVE
-
-		if (!tienesTurno)
-		{
-			//Si no tengo el turno, pinto un letrerito de "Esperando..."
-			sf::Font font;
-			std::string pathFont = "arial.ttf";
-			if (!font.loadFromFile(pathFont))
-			{
-				std::cout << "No se pudo cargar la fuente" << std::endl;
-			}
-
-
-			sf::Text textEsperando("Esperando...", font);
-			textEsperando.setPosition(sf::Vector2f(180, 200));
-			textEsperando.setCharacterSize(30);
-			textEsperando.setStyle(sf::Text::Bold);
-			textEsperando.setFillColor(sf::Color::Green);
-			window.draw(textEsperando);
-		}
-		else
-		{
-			//Si tengo el turno y hay una casilla marcada, la marco con un recuadro amarillo.
-			if (casillaMarcada)
-			{
-				sf::RectangleShape rect(sf::Vector2f(LADO_CASILLA, LADO_CASILLA));
-				rect.setPosition(sf::Vector2f(casillaOrigen.x*LADO_CASILLA, casillaOrigen.y*LADO_CASILLA));
-				rect.setFillColor(sf::Color::Transparent);
-				rect.setOutlineThickness(5);
-				rect.setOutlineColor(sf::Color::Yellow);
-				window.draw(rect);
-			}
-		}
-
-		//-----MOVED
-
-		window.display();
-	}
+	
 
 	//getchar();
 	//return 0;

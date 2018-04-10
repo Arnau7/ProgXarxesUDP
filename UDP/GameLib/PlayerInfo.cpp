@@ -4,9 +4,28 @@
 
 PlayerInfo::PlayerInfo()
 {
-	position.x = std::rand() % 10;
-	position.y = std::rand() % 10;
-	lives = 3;
+
+}
+
+PlayerInfo::PlayerInfo(std::string _nickname)
+{
+	nickname = _nickname;
+}
+
+void PlayerInfo::SetPosition(int _x, int _y) 
+{
+	x = _x;
+	y = _y;
+}
+
+int PlayerInfo::GetX() 
+{
+	return x;
+}
+
+int PlayerInfo::GetY() 
+{
+	return y;
 }
 
 PlayerInfo::~PlayerInfo()
