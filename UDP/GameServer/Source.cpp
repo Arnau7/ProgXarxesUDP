@@ -33,7 +33,7 @@ map<string, Direction> aPlayers;
 int playersOnline = 0;
 
 void receieveMessage(UdpSocket* socket) {
-
+	//while (true) { cout << ". "; }
 	Packet pack;
 	IpAddress ip;
 	unsigned short port;
@@ -60,8 +60,6 @@ void receieveMessage(UdpSocket* socket) {
 						//Top left
 						if (playersOnline == 0)
 						{
-							/*int plPosX = (0 + (rand() % static_cast<int>(7 - 0 + 1)));
-							int plPosY = (0 + (rand() % static_cast<int>(7 - 0 + 1)));*/
 							plPosX = 0;
 							plPosY = 0;
 						}
@@ -94,11 +92,11 @@ void receieveMessage(UdpSocket* socket) {
 					}
 					else {
 						cout << "The nickname is in use, please try another" << endl;
-						/*Packet pck;
-						int8_t header = ((int8_t)PacketType::PT_USEDNICK);
-						pack << header;
-						socket->send(pck, ip, port);
-						cout << "Sended warning" << endl;*/
+						//Packet pck;
+						//int8_t header = ((int8_t)PacketType::PT_USEDNICK);
+						//pack << header;
+						//socket->send(pck, ip, port);
+						//cout << "Sended warning" << endl;
 
 						// TODO fix the problem
 					}
@@ -120,6 +118,8 @@ int main()
 	Packet pack;
 
 	thread rM(receieveMessage, serverSocket);
-
+	while (true) {
+		int i = 1;
+	}
 	return 0;
 }
