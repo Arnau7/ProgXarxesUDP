@@ -62,28 +62,35 @@ void receieveMessage(UdpSocket* socket) {
 						{
 							plPosX = 0;
 							plPosY = 0;
+							pck << welcome << plPosX << plPosY;
+							socket->send(pck, aClientsDir[playersOnline].ip, aClientsDir[playersOnline].port);
 						}
 						//Top right
 						else if (playersOnline == 1)
 						{
-							plPosX = 11;
+							plPosX = 8;
 							plPosY = 0;
+							//Send player 2 pos to player 1
+							//Send player 1 pos to player 2
 						}
 						//Bot left
 						else if (playersOnline == 2)
 						{
 							plPosX = 0;
-							plPosY = 11;
+							plPosY = 8;
+							//Send player 3 pos to player 1 and 2
+							//Send player 1, 2 pos to player 3
 						}
 						//Bot right
 						else if (playersOnline == 3)
 						{
-							plPosX = 11;
-							plPosY = 11;
+							plPosX = 8;
+							plPosY = 8;
+							//Send player 4 pos to player 1,2,3
+							//Send player 1,2,3 pos to player 4
 						}
 
-						pck << welcome << plPosX << plPosY;
-						socket->send(pck, aClientsDir[playersOnline].ip, aClientsDir[playersOnline].port);
+						
 						playersOnline++;
 						if (playersOnline == 4) {
 							cout << "All players connected, start!" << endl;

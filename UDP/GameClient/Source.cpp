@@ -16,14 +16,14 @@
 #define SERVER_PORT 50000
 
 #define MAX 100
-#define SIZE_TABLERO 81
-#define SIZE_FILA_TABLERO 11
-#define LADO_CASILLA 64
+#define SIZE_TABLERO 121
+#define SIZE_FILA_TABLERO 9
+#define LADO_CASILLA 121
 #define RADIO_AVATAR 25.f
 #define OFFSET_AVATAR 5
 
-#define SIZE_TABLERO 64
-#define LADO_CASILLA 64
+#define SIZE_TABLERO 121
+#define LADO_CASILLA 57
 #define RADIO_AVATAR 25.f
 #define OFFSET_AVATAR 5
 
@@ -328,9 +328,9 @@ int main()
 	} while (!playerOnline);
 
 	cout << "All OK boiii" << endl;
-	while (true) {
+	/*while (true) {
 		int temp = 0;
-	}
+	}*/
 
 	//-----START
 
@@ -447,7 +447,28 @@ int main()
 		window.draw(shapeGato);
 
 		//-----NEW PLAYER
+		IpAddress ip;
+		unsigned short port;
+		Packet newPack;
+		if (aSocket->receive(newPack, ip, port) == Socket::Done) {
+			int8_t header;
+			newPack >> header;
+			if (header == PT_POSITION) {
+				int rol;
+				newPack >> posX >> posY;
+				cout << " and you are in the position: " << posX << ", " << posY << endl;
+				//playerOnline = true;
 
+				//Pintamos los cuatro circulitos del gato
+				sf::CircleShape shapeGato(RADIO_AVATAR);
+				shapeGato.setFillColor(sf::Color::Green);
+
+				sf::Vector2f positionGato1(posX, posY); //Position given by server
+				positionGato1 = BoardToWindows(positionGato1);
+				shapeGato.setPosition(positionGato1);
+
+				window.draw(shapeGato);
+			}
 
 		//-----MOVE
 
