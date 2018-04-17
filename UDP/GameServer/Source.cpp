@@ -51,8 +51,9 @@ void receieveMessage(UdpSocket* socket) {
 				if (playersOnline < 4) {
 					string nick;
 					pack >> nick;
-					cout << "A client says Hello!" << endl;
 					//if (aPlayers.find(nick) == aPlayers.end()) {
+					cout << "The client " << playersOnline << " has the nickname " << nick << endl;
+
 						aClientsDir.push_back(Direction(ip, port, nick));
 						PlayerInfo player(playersOnline, nick);
 						aPlayers[player.GetId()] = player;
@@ -90,7 +91,7 @@ void receieveMessage(UdpSocket* socket) {
 							//Send player 4 pos to player 1,2,3
 							//Send player 1,2,3 pos to player 4
 						}
-
+						cout << "Player " << player.GetId() << " at positions: " << player.GetX() << ", " << player.GetY() << endl;
 						pck << welcome << player.GetId() << player.GetX() << player.GetY();
 						socket->send(pck, aClientsDir[playersOnline].ip, aClientsDir[playersOnline].port);
 						playersOnline++;
@@ -99,12 +100,14 @@ void receieveMessage(UdpSocket* socket) {
 							cout << "All players connected, start!" << endl;
 							Packet pckStart;
 							int8_t headerStart = (int8_t)PacketType::PT_START;
-							for (int i = 0; i < playersOnline; i++) {
-								pckStart << headerStart;
-									socket->send(pckStart, aClientsDir[i].ip, aClientsDir[i].port);
-							
+							pckStart << headerStart;
+							for (int i = 0; i < 4; i++) {
+								cout << "Packing position: " << aPlayers[i].GetX() << ", " << aPlayers[i].GetY() << endl;
+								pckStart << aPlayers[i].GetX() << aPlayers[i].GetY();							
 							}
-
+							for (int i = 0; i < playersOnline; i++) {
+								socket->send(pckStart, aClientsDir[i].ip, aClientsDir[i].port);
+							}
 						}
 					//}
 					//else {

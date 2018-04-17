@@ -284,11 +284,9 @@ void receieveMessage(UdpSocket* socket, string nickname) {
 		if (socket->receive(newPack, ip, port) == Socket::Done) {
 			int8_t header;
 			newPack >> header;
+			int id = 0;
 			//Used to asign a initial position given by the server
 			if (header == PT_WELCOME) {
-
-				int id;
-
 				newPack >> id >> posX >> posY;
 				PlayerInfo player(id, nickname);
 				aPlayers[player.GetId()] = player;
@@ -320,6 +318,27 @@ void receieveMessage(UdpSocket* socket, string nickname) {
 			}
 			else if (header == PT_START) 
 			{
+				for (int i = 0; i < 4; i++) {
+					if (i != id) {
+						int posX;
+						int posY;
+						newPack >> posX >> posY;
+						PlayerInfo player;
+						aPlayers[i] = player;
+						player.SetPosition(posX, posY);
+						cout << "Received player " << i << " at position: " << posX << ", " << posY << endl;
+					}
+					else if (i == id) {
+						int posX;
+						int posY;
+						newPack >> posX >> posY;
+						if (aPlayers[i].GetX() == posX && aPlayers[i].GetY() == posY) {
+							cout << "My positions are correct" << endl;
+						}
+						else
+							cout << "Positions are wrong" << endl;
+					}
+				}
 				startGame = true;
 			}
 
