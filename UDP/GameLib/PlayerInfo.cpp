@@ -7,8 +7,9 @@ PlayerInfo::PlayerInfo()
 
 }
 
-PlayerInfo::PlayerInfo(std::string _nickname)
+PlayerInfo::PlayerInfo(int _id, std::string _nickname)
 {
+	id = _id;
 	nickname = _nickname;
 }
 
@@ -16,6 +17,11 @@ void PlayerInfo::SetPosition(int _x, int _y)
 {
 	x = _x;
 	y = _y;
+}
+
+int PlayerInfo::GetId()
+{
+	return id;
 }
 
 int PlayerInfo::GetX() 

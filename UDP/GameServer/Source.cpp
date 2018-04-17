@@ -33,7 +33,7 @@ public:
 };
 
 vector<Direction> aClientsDir;
-map<string, PlayerInfo> aPlayers;
+map<int, PlayerInfo> aPlayers;
 int playersOnline = 0;
 
 void receieveMessage(UdpSocket* socket) {
@@ -52,10 +52,10 @@ void receieveMessage(UdpSocket* socket) {
 					string nick;
 					pack >> nick;
 					cout << "A client says Hello!" << endl;
-					if (aPlayers.find(nick) == aPlayers.end()) {
+					//if (aPlayers.find(nick) == aPlayers.end()) {
 						aClientsDir.push_back(Direction(ip, port, nick));
-						PlayerInfo player;
-						aPlayers[nick] = player;
+						PlayerInfo player(playersOnline, nick);
+						aPlayers[player.GetId()] = player;
 						cout << "We have received the player: " << nick << endl;
 
 						Packet pck;
@@ -91,7 +91,7 @@ void receieveMessage(UdpSocket* socket) {
 							//Send player 1,2,3 pos to player 4
 						}
 
-						pck << welcome << player.GetX() << player.GetY();
+						pck << welcome << player.GetId() << player.GetX() << player.GetY();
 						socket->send(pck, aClientsDir[playersOnline].ip, aClientsDir[playersOnline].port);
 						playersOnline++;
 						if (playersOnline == 4) {
@@ -106,17 +106,17 @@ void receieveMessage(UdpSocket* socket) {
 							}
 
 						}
-					}
-					else {
-						cout << "The nickname is in use, please try another" << endl;
-						//Packet pck;
-						//int8_t header = ((int8_t)PacketType::PT_USEDNICK);
-						//pack << header;
-						//socket->send(pck, ip, port);
-						//cout << "Sended warning" << endl;
+					//}
+					//else {
+					//	cout << "The nickname is in use, please try another" << endl;
+					//	//Packet pck;
+					//	//int8_t header = ((int8_t)PacketType::PT_USEDNICK);
+					//	//pack << header;
+					//	//socket->send(pck, ip, port);
+					//	//cout << "Sended warning" << endl;
 
-						// TODO fix the problem
-					}
+					//	// TODO fix the problem
+					//}
 
 				}
 				else

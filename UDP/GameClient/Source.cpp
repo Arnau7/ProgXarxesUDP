@@ -10,7 +10,7 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <thread>
-
+#include <PlayerInfo.h>
 
 #define SERVER_IP "localhost"
 #define SERVER_PORT 50000
@@ -92,6 +92,7 @@ enum PacketType
 };
 
 bool playerOnline = false;
+map<int, PlayerInfo> aPlayers;
 
 struct Direction {
 public:
@@ -285,12 +286,13 @@ void receieveMessage(UdpSocket* socket, string nickname) {
 			newPack >> header;
 			//Used to asign a initial position given by the server
 			if (header == PT_WELCOME) {
-				int rol;
-				newPack >> posX >> posY;
 
-				// for i0, i coectedP
-				// pack >> posX >> posY 
-				cout << " and you are in the position: " << posX << ", " << posY << endl;
+				int id;
+
+				newPack >> id >> posX >> posY;
+				PlayerInfo player(id, nickname);
+				aPlayers[player.GetId()] = player;
+				cout << "You are the player: " << id << " and you are in the position: " << posX << ", " << posY << endl;
 				playerOnline = true;
 			}
 			//Used to make the player use a new nick in case it is used
