@@ -93,6 +93,8 @@ enum PacketType
 
 bool playerOnline = false;
 map<int, PlayerInfo> aPlayers;
+int num;
+
 
 struct Direction {
 public:
@@ -292,6 +294,7 @@ void receieveMessage(UdpSocket* socket, string nickname) {
 				aPlayers[player.GetId()] = player;
 				cout << "You are the player: " << id << " and you are in the position: " << posX << ", " << posY << endl;
 				playerOnline = true;
+				num = id;
 			}
 			//Used to make the player use a new nick in case it is used
 			else if (header == PT_USEDNICK) {
@@ -319,24 +322,23 @@ void receieveMessage(UdpSocket* socket, string nickname) {
 			else if (header == PT_START) 
 			{
 				for (int i = 0; i < 4; i++) {
+					int posX;
+					int posY;
+					newPack >> posX >> posY;
+					PlayerInfo player;
+					aPlayers[i] = player;
 					if (i != id) {
-						int posX;
-						int posY;
-						newPack >> posX >> posY;
-						PlayerInfo player;
-						aPlayers[i] = player;
 						player.SetPosition(posX, posY);
 						cout << "Received player " << i << " at position: " << posX << ", " << posY << endl;
 					}
 					else if (i == id) {
-						int posX;
-						int posY;
-						newPack >> posX >> posY;
 						if (aPlayers[i].GetX() == posX && aPlayers[i].GetY() == posY) {
 							cout << "My positions are correct" << endl;
 						}
-						else
-							cout << "Positions are wrong" << endl;
+						else {
+							player.SetPosition(posX, posY);
+							cout << "Positions corrected" << endl;
+						}
 					}
 				}
 				startGame = true;
@@ -478,32 +480,25 @@ int main()
 
 		window.clear();
 
-		//Coin Draw
-		sf::CircleShape shapeCoin(RADIO_AVATAR);
-		shapeCoin.setFillColor(sf::Color::Yellow);
 
-		sf::Vector2f posCoin(4, 4);
-		posCoin = BoardToWindows(posCoin);
-		shapeCoin.setPosition(posCoin);
 
-		window.draw(shapeCoin);
 
-		//Player Draw
-		sf::CircleShape shapePlayer(RADIO_AVATAR);
-		shapePlayer.setFillColor(sf::Color::Green);
-
-		sf::Vector2f posPlayer(posX, posY);
-		posPlayer = BoardToWindows(posPlayer);
-		shapePlayer.setPosition(posPlayer);
-
-		window.draw(shapePlayer);
 
 
 			//-----MOVE
 
-
 			if (!startGame)
 			{
+
+				//Player Draw
+				sf::CircleShape shapePlayer(RADIO_AVATAR);
+				shapePlayer.setFillColor(sf::Color::Green);
+
+				sf::Vector2f posPlayer(posX, posY);
+				posPlayer = BoardToWindows(posPlayer);
+				shapePlayer.setPosition(posPlayer);
+
+				window.draw(shapePlayer);
 				//Si no tengo el turno, pinto un letrerito de "Esperando..."
 				sf::Font font;
 				std::string pathFont = "arial.ttf";
@@ -520,10 +515,82 @@ int main()
 				textEsperando.setFillColor(sf::Color::Green);
 				window.draw(textEsperando);
 			}
-		/*	else
+			else if(startGame)
 			{
+				//Coin Draw
+				sf::CircleShape shapeCoin(RADIO_AVATAR);
+				shapeCoin.setFillColor(sf::Color::Yellow);
+
+				sf::Vector2f posCoin(4, 4);
+				posCoin = BoardToWindows(posCoin);
+				shapeCoin.setPosition(posCoin);
+
+				window.draw(shapeCoin);
+
+				for (int i = 0; i < 4; i++) 
+				{
+					if (i != num) {
+						if (i == 0) {
+							//Player Draw
+							sf::CircleShape shapePlayer0(RADIO_AVATAR);
+							shapePlayer0.setFillColor(sf::Color::Red);
+
+							sf::Vector2f posPlayer0(aPlayers[i].GetX(), aPlayers[i].GetY());
+							posPlayer0 = BoardToWindows(posPlayer0);
+							shapePlayer0.setPosition(posPlayer0);
+
+							window.draw(shapePlayer0);
+						}
+						if (i == 1) {
+							//Player Draw
+							sf::CircleShape shapePlayer1(RADIO_AVATAR);
+							shapePlayer1.setFillColor(sf::Color::Red);
+
+							sf::Vector2f posPlayer1(aPlayers[i].GetX(), aPlayers[i].GetY());
+							posPlayer1 = BoardToWindows(posPlayer1);
+							shapePlayer1.setPosition(posPlayer1);
+
+							window.draw(shapePlayer1);
+						}
+						if (i == 2) {
+							//Player Draw
+							sf::CircleShape shapePlayer2(RADIO_AVATAR);
+							shapePlayer2.setFillColor(sf::Color::Red);
+
+							sf::Vector2f posPlayer2(aPlayers[i].GetX(), aPlayers[i].GetY());
+							posPlayer2 = BoardToWindows(posPlayer2);
+							shapePlayer2.setPosition(posPlayer2);
+
+							window.draw(shapePlayer2);
+						}
+						if (i == 3) {
+							//Player Draw
+							sf::CircleShape shapePlayer3(RADIO_AVATAR);
+							shapePlayer3.setFillColor(sf::Color::Red);
+
+							sf::Vector2f posPlayer3(aPlayers[i].GetX(), aPlayers[i].GetY());
+							posPlayer3 = BoardToWindows(posPlayer3);
+							shapePlayer3.setPosition(posPlayer3);
+
+							window.draw(shapePlayer3);
+						}
+					}
+					
+					else if(i == num){
+						//Player Draw
+						sf::CircleShape shapePlayer(RADIO_AVATAR);
+						shapePlayer.setFillColor(sf::Color::Green);
+
+						sf::Vector2f posPlayer(aPlayers[i].GetX(), aPlayers[i].GetY());
+						posPlayer = BoardToWindows(posPlayer);
+						shapePlayer.setPosition(posPlayer);
+
+						window.draw(shapePlayer);
+					}
+				}
+
 				//Si tengo el turno y hay una casilla marcada, la marco con un recuadro amarillo.
-				if (casillaMarcada)
+				/*if (casillaMarcada)
 				{
 					sf::RectangleShape rect(sf::Vector2f(LADO_CASILLA, LADO_CASILLA));
 					rect.setPosition(sf::Vector2f(casillaOrigen.x*LADO_CASILLA, casillaOrigen.y*LADO_CASILLA));
@@ -531,9 +598,9 @@ int main()
 					rect.setOutlineThickness(5);
 					rect.setOutlineColor(sf::Color::Yellow);
 					window.draw(rect);
-				}
+				}*/
 			}
-			*/
+			
 			//-----MOVED
 
 			window.display();
