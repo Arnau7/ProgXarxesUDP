@@ -295,13 +295,14 @@ void receieveMessage(UdpSocket* socket, string nickname) {
 				cout << "You are the player: " << id << " and you are in the position: " << posX << ", " << posY << endl;
 				playerOnline = true;
 				num = id;
+				cout << endl << "Num: " << num << endl;
 			}
 			//Used to make the player use a new nick in case it is used
 			else if (header == PT_USEDNICK) {
 				// TODO the player can't ask for a new name, also he's still sending messages of hello
 				IpAddress serverIp = SERVER_IP;
 				unsigned short port = SERVER_PORT;
-				cout << "Another name: ";
+				cout << "Another name: " << endl;
 				cin >> nickname;
 				Packet pck;
 				int8_t header = (int8_t)PacketType::PT_HELLO;
@@ -317,26 +318,27 @@ void receieveMessage(UdpSocket* socket, string nickname) {
 			else if (header == PT_POSITION)
 			{
 				newPack >> posX >> posY;
+				aPlayers[num].SetPosition(posX, posY);
 				cout << "Recibo la confirmacion: " << posX << " " << posY << std::endl;
 			}
 			else if (header == PT_START) 
 			{
 				for (int i = 0; i < 4; i++) {
-					int posX;
-					int posY;
-					newPack >> posX >> posY;
-					PlayerInfo player;
+					int pX = 0;
+					int pY = 0;
+					newPack >> pX >> pY;
+					PlayerInfo player(i,nickname);
 					aPlayers[i] = player;
-					if (i != id) {
-						player.SetPosition(posX, posY);
-						cout << "Received player " << i << " at position: " << posX << ", " << posY << endl;
+					if (i != num) {
+						aPlayers[i].SetPosition(pX, pY);
+						cout << "Received player " << i << " at position: " << pX << ", " << pY << endl;
 					}
-					else if (i == id) {
-						if (aPlayers[i].GetX() == posX && aPlayers[i].GetY() == posY) {
+					else if (i == num) {
+						if (aPlayers[i].GetX() == pX && aPlayers[i].GetY() == pY) {
 							cout << "My positions are correct" << endl;
 						}
 						else {
-							player.SetPosition(posX, posY);
+							aPlayers[i].SetPosition(pX, pY);
 							cout << "Positions corrected" << endl;
 						}
 					}
@@ -361,7 +363,14 @@ int main()
 
 	Clock clockCounter;
 
+	for (int i = 0; i<4; i++) {
+		PlayerInfo player;
+		aPlayers[i] = player;
+	}
+
 	thread t(receieveMessage, aSocket, nickname);
+
+	
 
 	//thread r(rrr);
 	do {
@@ -480,11 +489,6 @@ int main()
 
 		window.clear();
 
-
-
-
-
-
 			//-----MOVE
 
 			if (!startGame)
@@ -506,7 +510,6 @@ int main()
 				{
 					std::cout << "No se pudo cargar la fuente" << std::endl;
 				}
-
 
 				sf::Text textEsperando("Esperando...", font);
 				textEsperando.setPosition(sf::Vector2f(180, 200));
@@ -541,7 +544,7 @@ int main()
 
 							window.draw(shapePlayer0);
 						}
-						if (i == 1) {
+						else if (i == 1) {
 							//Player Draw
 							sf::CircleShape shapePlayer1(RADIO_AVATAR);
 							shapePlayer1.setFillColor(sf::Color::Red);
@@ -552,7 +555,7 @@ int main()
 
 							window.draw(shapePlayer1);
 						}
-						if (i == 2) {
+						else if (i == 2) {
 							//Player Draw
 							sf::CircleShape shapePlayer2(RADIO_AVATAR);
 							shapePlayer2.setFillColor(sf::Color::Red);
@@ -563,7 +566,7 @@ int main()
 
 							window.draw(shapePlayer2);
 						}
-						if (i == 3) {
+						else if (i == 3) {
 							//Player Draw
 							sf::CircleShape shapePlayer3(RADIO_AVATAR);
 							shapePlayer3.setFillColor(sf::Color::Red);
