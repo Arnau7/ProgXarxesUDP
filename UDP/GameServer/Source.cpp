@@ -20,7 +20,8 @@ enum PacketType
 	PT_RESETPLAYER = 7,
 	PT_NEWPLAYER = 8,
 	PT_MOVE = 9,
-	PT_START = 10
+	PT_START = 10,
+	PT_COIN = 11
 };
 
 struct Direction {
@@ -35,6 +36,15 @@ public:
 vector<Direction> aClientsDir;
 map<int, PlayerInfo> aPlayers;
 int playersOnline = 0;
+int coinX = 0;
+int coinY = 0;
+
+void NewCoinPosition() {
+	int randX = rand() % 8;
+	int randY = rand() % 8;
+	coinX = randX;
+	coinY = randY;
+}
 
 void receieveMessage(UdpSocket* socket) {
 	//while (true) { cout << ". "; }
@@ -56,8 +66,9 @@ void receieveMessage(UdpSocket* socket) {
 						
 						aClientsDir.push_back(Direction(ip, port, nick));
 						PlayerInfo player(playersOnline, nick);
-						aPlayers[player.GetId()] = player;
-						cout << "We have received the player: " << nick << endl;
+						
+						//aPlayers[player.GetId()] = player;
+						cout << "We have received the player: " << nick << " ID: " << player.GetId() << endl;
 
 						Packet pck;
 						int8_t welcome = ((int8_t)PacketType::PT_WELCOME);
@@ -82,6 +93,9 @@ void receieveMessage(UdpSocket* socket) {
 						{
 							player.SetPosition(8, 8);
 						}
+
+						aPlayers.insert(pair<int, PlayerInfo>(playersOnline, player));
+
 						cout << "Player " << player.GetId() << " at positions: " << player.GetX() << ", " << player.GetY() << endl;
 						pck << welcome << player.GetId() << player.GetX() << player.GetY();
 						socket->send(pck, aClientsDir[playersOnline].ip, aClientsDir[playersOnline].port);
@@ -92,10 +106,19 @@ void receieveMessage(UdpSocket* socket) {
 							Packet pckStart;
 							int8_t headerStart = (int8_t)PacketType::PT_START;
 							pckStart << headerStart;
-							for (int i = 0; i < 4; i++) {
+							for (map<int, PlayerInfo>::iterator it = aPlayers.begin(); it != aPlayers.end(); ++it) {
+								cout << "ID: " << it->second.GetId() << endl;
+								cout << "Packing position: " << it->second.GetX() << ", " << it->second.GetY() << endl;
+								pckStart << it->second.GetX() << it->second.GetY();
+							}
+							/*for (int i = 0; i < 4; i++) {
 								cout << "Packing position: " << aPlayers[i].GetX() << ", " << aPlayers[i].GetY() << endl;
 								pckStart << aPlayers[i].GetX() << aPlayers[i].GetY();							
-							}
+							}*/
+							coinX = 4;
+							coinY = 4;
+							cout << "Coin position: " << coinX << " , " << coinY << endl;
+							pckStart << coinX << coinY;
 							for (int i = 0; i < 4; i++) {
 								socket->send(pckStart, aClientsDir[i].ip, aClientsDir[i].port);
 							}
@@ -119,6 +142,8 @@ void receieveMessage(UdpSocket* socket) {
 			}
 			else if (header == PacketType::PT_MOVE) 
 			{
+				int playerNum;
+				pack >> playerNum;
 				int posX, posY;
 				pack >> posX >> posY;
 				if (posX <= -1)		{posX = 0;}
@@ -126,14 +151,33 @@ void receieveMessage(UdpSocket* socket) {
 				if (posX >= 9)		{posX = 8;}
 				if (posY >= 9)		{posY = 8;}
 
+				//COMPROVAR POSICIÓ PLAYER == MONEDA
+
 				std::cout << "Se intenta la pos " << posX << " " << posY << std::endl;
 				if ((posX >= 0 && posX <= 8) && (posY >= 0 && posY <= 8))
 				{
 					int8_t headerPos = ((int8_t)PacketType::PT_POSITION);
 					std::cout << "Se confirma la pos " << posX << " " << posY << std::endl;
 					sf::Packet pckSend;
-					pckSend << headerPos << posX << posY;
-					socket->send(pckSend, ip, port);
+					
+					//socket->send(pckSend, ip, port);
+					if (posX == coinX && posY == coinY) {
+						int8_t header2 = ((int8_t)PacketType::PT_COIN);
+						pckSend << headerPos << header2 << playerNum << posX << posY;
+						NewCoinPosition();
+						pckSend << coinX << coinY;
+						for (int i = 0; i < 4; i++) {
+							socket->send(pckSend, aClientsDir[i].ip, aClientsDir[i].port);
+						}
+
+					}
+					else {
+						int8_t header2 = ((int8_t)PacketType::PT_MOVE);
+						pckSend << headerPos << header2 << playerNum << posX << posY;
+						for (int i = 0; i < 4; i++) {
+							socket->send(pckSend, aClientsDir[i].ip, aClientsDir[i].port);
+						}
+					}
 				}
 			}
 				

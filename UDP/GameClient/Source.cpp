@@ -88,13 +88,15 @@ enum PacketType
 	PT_RESETPLAYER = 7,
 	PT_NEWPLAYER = 8,
 	PT_MOVE = 9,
-	PT_START = 10
+	PT_START = 10,
+	PT_COIN = 11
 };
 
 bool playerOnline = false;
 map<int, PlayerInfo> aPlayers;
-int num;
-
+int num; //USED as client local global player ID
+int coinX = 0;
+int coinY = 0;
 
 struct Direction {
 public:
@@ -317,9 +319,27 @@ void receieveMessage(UdpSocket* socket, string nickname) {
 			//Used to receive server position update
 			else if (header == PT_POSITION)
 			{
-				newPack >> posX >> posY;
-				aPlayers[num].SetPosition(posX, posY);
-				cout << "Recibo la confirmacion: " << posX << " " << posY << std::endl;
+				int8_t header2;
+				newPack >> header2;
+				if (header2 == PT_COIN) 
+				{
+					int playerNum;
+					int pX, pY;
+					int cX, cY;
+					newPack >> playerNum >> pX >> pY >> cX >> cY;
+					aPlayers[playerNum].SetPosition(pX, pY);
+					coinX = cX;
+					coinY = cY;
+					cout << "Recibo la confirmacion: " << pX << " " << pY << endl;
+					cout << "New coin pos: " << cX << " " << cY << endl;
+				}
+				else if (header2 == PT_MOVE) {
+					int playerNum;
+					int pX, pY;
+					newPack >> playerNum >> pX >> pY;
+					aPlayers[playerNum].SetPosition(pX, pY);
+					cout << "Recibo la confirmacion: " << pX << " " << pY << endl;
+				}
 			}
 			else if (header == PT_START) 
 			{
@@ -343,6 +363,9 @@ void receieveMessage(UdpSocket* socket, string nickname) {
 						}
 					}
 				}
+				
+				newPack >> coinX >> coinY;
+				cout << "Coin position: " << coinX << " , " << coinY << endl;
 				startGame = true;
 			}
 
@@ -412,7 +435,7 @@ int main()
 					int8_t header = (int8_t)PacketType::PT_MOVE;
 					sf::Packet pckLeft;
 					posX = posX - 1;
-					pckLeft << header << posX << posY;
+					pckLeft << header << num << posX << posY;
 					aSocket->send(pckLeft, SERVER_IP, SERVER_PORT);
 
 				}
@@ -421,7 +444,7 @@ int main()
 					int8_t header = (int8_t)PacketType::PT_MOVE;
 					sf::Packet pckRight;
 					posX = posX + 1;
-					pckRight << header << posX << posY;
+					pckRight << header << num << posX << posY;
 					aSocket->send(pckRight, SERVER_IP, SERVER_PORT);
 				}
 				else if(event.key.code == sf::Keyboard::Up)
@@ -429,7 +452,7 @@ int main()
 					int8_t header = (int8_t)PacketType::PT_MOVE;
 					sf::Packet pckUp;
 					posY = posY - 1;
-					pckUp << header << posX << posY;
+					pckUp << header << num << posX << posY;
 					aSocket->send(pckUp, SERVER_IP, SERVER_PORT);
 				}
 				else if (event.key.code == sf::Keyboard::Down)
@@ -437,7 +460,7 @@ int main()
 					int8_t header = (int8_t)PacketType::PT_MOVE;
 					sf::Packet pckDown;
 					posY = posY + 1;
-					pckDown << header << posX << posY;
+					pckDown << header << num << posX << posY;
 					aSocket->send(pckDown, SERVER_IP, SERVER_PORT);
 				}
 				break;
@@ -524,7 +547,7 @@ int main()
 				sf::CircleShape shapeCoin(RADIO_AVATAR);
 				shapeCoin.setFillColor(sf::Color::Yellow);
 
-				sf::Vector2f posCoin(4, 4);
+				sf::Vector2f posCoin(coinX, coinY);
 				posCoin = BoardToWindows(posCoin);
 				shapeCoin.setPosition(posCoin);
 
