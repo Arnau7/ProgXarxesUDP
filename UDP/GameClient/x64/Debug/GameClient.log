@@ -1,13 +1,2 @@
-﻿  Source.cpp
-d:\arnau\enti\3r\programació de jocs en xarxa\progxarxesudp\udp\gameclient\source.cpp(26): warning C4005: 'LADO_CASILLA': redefinición de macro
-  d:\arnau\enti\3r\programació de jocs en xarxa\progxarxesudp\udp\gameclient\source.cpp(21): note: vea la definición anterior de 'LADO_CASILLA'
-d:\arnau\enti\3r\programació de jocs en xarxa\progxarxesudp\udp\gameclient\source.cpp(56): warning C4244: 'inicializando': conversión de 'int' a 'float'; posible pérdida de datos
-d:\arnau\enti\3r\programació de jocs en xarxa\progxarxesudp\udp\gameclient\source.cpp(57): warning C4244: 'inicializando': conversión de 'int' a 'float'; posible pérdida de datos
-d:\arnau\enti\3r\programació de jocs en xarxa\progxarxesudp\udp\gameclient\source.cpp(524): warning C4244: 'argumento': conversión de 'int' a 'float'; posible pérdida de datos
-d:\arnau\enti\3r\programació de jocs en xarxa\progxarxesudp\udp\gameclient\source.cpp(550): warning C4244: 'argumento': conversión de 'int' a 'float'; posible pérdida de datos
-d:\arnau\enti\3r\programació de jocs en xarxa\progxarxesudp\udp\gameclient\source.cpp(564): warning C4244: 'argumento': conversión de 'int' a 'float'; posible pérdida de datos
-d:\arnau\enti\3r\programació de jocs en xarxa\progxarxesudp\udp\gameclient\source.cpp(575): warning C4244: 'argumento': conversión de 'int' a 'float'; posible pérdida de datos
-d:\arnau\enti\3r\programació de jocs en xarxa\progxarxesudp\udp\gameclient\source.cpp(586): warning C4244: 'argumento': conversión de 'int' a 'float'; posible pérdida de datos
-d:\arnau\enti\3r\programació de jocs en xarxa\progxarxesudp\udp\gameclient\source.cpp(597): warning C4244: 'argumento': conversión de 'int' a 'float'; posible pérdida de datos
-d:\arnau\enti\3r\programació de jocs en xarxa\progxarxesudp\udp\gameclient\source.cpp(610): warning C4244: 'argumento': conversión de 'int' a 'float'; posible pérdida de datos
-  GameClient.vcxproj -> D:\Arnau\ENTI\3r\Programació de jocs en xarxa\ProgXarxesUDP\UDP\x64\Debug\GameClient.exe
+﻿  GameClient.vcxproj -> C:\Users\aruiz\Documents\GitHub\ProgXarxesUDP\UDP\x64\Debug\GameClient.exe
+  GameClient.vcxproj -> C:\Users\aruiz\Documents\GitHub\ProgXarxesUDP\UDP\x64\Debug\GameClient.pdb (Partial PDB)

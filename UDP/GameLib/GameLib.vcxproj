@@ -143,6 +143,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AccumMove.h" />
     <ClInclude Include="InputMemoryBitStream.h" />
     <ClInclude Include="InputMemoryStream.h" />
     <ClInclude Include="OutputMemoryBitStream.h" />
@@ -150,6 +151,7 @@
     <ClInclude Include="PlayerInfo.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AccumMove.cpp" />
     <ClCompile Include="PlayerInfo.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -33,9 +33,15 @@
     <ClInclude Include="OutputMemoryStream.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="AccumMove.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PlayerInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AccumMove.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

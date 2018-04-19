@@ -11,6 +11,8 @@
 #include <SFML/Graphics.hpp>
 #include <thread>
 #include <PlayerInfo.h>
+#include <AccumMove.h>
+#include <list>
 
 #define SERVER_IP "localhost"
 #define SERVER_PORT 50000
@@ -97,6 +99,9 @@ map<int, PlayerInfo> aPlayers;
 int num; //USED as client local global player ID
 int coinX = 0;
 int coinY = 0;
+list<AccumMove>aMoves;
+Clock clockMoves;
+int idMove = 0;
 
 struct Direction {
 public:
@@ -373,6 +378,34 @@ void receieveMessage(UdpSocket* socket, string nickname) {
 	}
 }
 
+void SendMoves(UdpSocket* socket) {
+	while (true) 
+	{
+		do {
+			list<AccumMove>::iterator it;
+			for (it = aMoves.begin(); it != aMoves.end(); ++it)
+			{
+				socket->send(it->CreatePacket(), SERVER_IP, SERVER_PORT);
+			}
+		} while (aMoves.size() > 0);
+	}
+	
+	/*if (aMoves.size() > 0) {
+		aSocket->send(pckLeft, SERVER_IP, SERVER_PORT);
+	}
+
+	do {
+		if (clockCounter.getElapsedTime().asMilliseconds() >= 500) {
+			Packet pack;
+			int8_t header = (int8_t)PacketType::PT_HELLO;
+			pack << header << nickname;
+			aSocket->send(pack, serverIp, port);
+			cout << "Send, time: " << clockCounter.getElapsedTime().asMilliseconds() << endl;
+			clockCounter.restart();
+		}
+	} while (!playerOnline);*/
+}
+
 int main()
 {
 	string nickname = "No Nickname";
@@ -432,36 +465,37 @@ int main()
 			case sf::Event::KeyPressed:
 				if (event.key.code == sf::Keyboard::Left)
 				{
-					int8_t header = (int8_t)PacketType::PT_MOVE;
-					sf::Packet pckLeft;
+					//int8_t header = (int8_t)PacketType::PT_MOVE;
+					//sf::Packet pckLeft;
 					posX = posX - 1;
-					pckLeft << header << num << posX << posY;
-					aSocket->send(pckLeft, SERVER_IP, SERVER_PORT);
+
+					//pckLeft << header << num << posX << posY;
+					//aSocket->send(pckLeft, SERVER_IP, SERVER_PORT);
 
 				}
 				else if (event.key.code == sf::Keyboard::Right)
 				{
-					int8_t header = (int8_t)PacketType::PT_MOVE;
-					sf::Packet pckRight;
+					//int8_t header = (int8_t)PacketType::PT_MOVE;
+					//sf::Packet pckRight;
 					posX = posX + 1;
-					pckRight << header << num << posX << posY;
-					aSocket->send(pckRight, SERVER_IP, SERVER_PORT);
+					//pckRight << header << num << posX << posY;
+					//aSocket->send(pckRight, SERVER_IP, SERVER_PORT);
 				}
 				else if(event.key.code == sf::Keyboard::Up)
 				{
-					int8_t header = (int8_t)PacketType::PT_MOVE;
-					sf::Packet pckUp;
+					//int8_t header = (int8_t)PacketType::PT_MOVE;
+					//sf::Packet pckUp;
 					posY = posY - 1;
-					pckUp << header << num << posX << posY;
-					aSocket->send(pckUp, SERVER_IP, SERVER_PORT);
+					//pckUp << header << num << posX << posY;
+					//aSocket->send(pckUp, SERVER_IP, SERVER_PORT);
 				}
 				else if (event.key.code == sf::Keyboard::Down)
 				{
-					int8_t header = (int8_t)PacketType::PT_MOVE;
-					sf::Packet pckDown;
+					//int8_t header = (int8_t)PacketType::PT_MOVE;
+					//sf::Packet pckDown;
 					posY = posY + 1;
-					pckDown << header << num << posX << posY;
-					aSocket->send(pckDown, SERVER_IP, SERVER_PORT);
+					//pckDown << header << num << posX << posY;
+					//aSocket->send(pckDown, SERVER_IP, SERVER_PORT);
 				}
 				break;
 				case sf::Event::MouseButtonPressed:
