@@ -19,6 +19,7 @@ sf::Packet AccumMove::CreatePacket()
 {
 	sf::Packet packet;
 	int8_t header = (int8_t)PacketType::PT_MOVE;
+	std::cout << "Packing the positions: " << absolute_X << ", " << absolute_Y << std::endl;
 	packet << header << idMove << delta_Xs << delta_Ys << absolute_X << absolute_Y;
 	return packet;
 }

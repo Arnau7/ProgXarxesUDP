@@ -379,17 +379,23 @@ void receieveMessage(UdpSocket* socket, string nickname) {
 }
 
 void SendMoves(UdpSocket* socket) {
-	while (true) 
+	while (true)
 	{
-		do {
+		if (aMoves.size() > 0) {
+			cout << "Found!" << endl;
 			list<AccumMove>::iterator it;
 			for (it = aMoves.begin(); it != aMoves.end(); ++it)
 			{
-				socket->send(it->CreatePacket(), SERVER_IP, SERVER_PORT);
+				Packet pack = it->CreatePacket();
+				int x, y, w, z, i;
+				int8_t pene;
+				pack >> pene >> x >> y >> w >> z >> i;
+				cout << "Send the packet with positions: " << z << ", " << i << endl;
+				socket->send(pack, SERVER_IP, SERVER_PORT);
+				aMoves.pop_front();
 			}
-		} while (aMoves.size() > 0);
+		}
 	}
-	
 	/*if (aMoves.size() > 0) {
 		aSocket->send(pckLeft, SERVER_IP, SERVER_PORT);
 	}
@@ -425,7 +431,7 @@ int main()
 	}
 
 	thread t(receieveMessage, aSocket, nickname);
-
+	thread sM(SendMoves, aSocket);
 	
 
 	//thread r(rrr);
@@ -463,12 +469,28 @@ int main()
 				window.close();
 				break;
 			case sf::Event::KeyPressed:
+				/*Clock moveClock;
+				int accumX = 0;
+				int accumY = 0;
+				do {
+					if (clockCounter.getElapsedTime().asMilliseconds() >= 500) {
+						Packet pack;
+						int8_t header = (int8_t)PacketType::PT_HELLO;
+						pack << header << nickname;
+						aSocket->send(pack, serverIp, port);
+						cout << "Send, time: " << clockCounter.getElapsedTime().asMilliseconds() << endl;
+						clockCounter.restart();
+					}
+				} while (!playerOnline);*/
 				if (event.key.code == sf::Keyboard::Left)
 				{
 					//int8_t header = (int8_t)PacketType::PT_MOVE;
 					//sf::Packet pckLeft;
 					posX = posX - 1;
-
+					cout << "Positions to send: " << posX << ", " << posY << endl;
+					AccumMove acc(posX, -1, 0, posX, posY);
+					aMoves.push_back(acc);
+					cout << "Added to aMoves: " << aMoves.size() << endl;
 					//pckLeft << header << num << posX << posY;
 					//aSocket->send(pckLeft, SERVER_IP, SERVER_PORT);
 
