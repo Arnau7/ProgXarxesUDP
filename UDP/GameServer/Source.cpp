@@ -142,10 +142,10 @@ void receieveMessage(UdpSocket* socket) {
 			}
 			else if (header == PacketType::PT_MOVE) 
 			{
-				int idMove;
-				pack >> idMove;
-				int posX, posY, absoluteX, absoluteY;
-				pack >> absoluteX  >> absoluteY >> posX >> posY;
+				int idMove, playerNum;
+				pack >> idMove >> playerNum;
+				int posX, posY, deltaX, deltaY;
+				pack >> deltaX  >> deltaY >> posX >> posY;
 				if (posX <= -1)		{posX = 0;}
 				if (posY <= -1)		{posY = 0;}
 				if (posX >= 9)		{posX = 8;}

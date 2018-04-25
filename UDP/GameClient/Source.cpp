@@ -392,8 +392,11 @@ void SendMoves(UdpSocket* socket) {
 				pack >> pene >> x >> y >> w >> z >> i;
 				cout << "Send the packet with positions: " << z << ", " << i << endl;
 				socket->send(pack, SERVER_IP, SERVER_PORT);
-				aMoves.pop_front();
 			}
+			aMoves.pop_front();
+		}
+		else {
+
 		}
 	}
 	/*if (aMoves.size() > 0) {
@@ -425,6 +428,9 @@ int main()
 
 	Clock clockCounter;
 
+	int deltaX = 0;
+	int deltaY = 0;
+
 	for (int i = 0; i<4; i++) {
 		PlayerInfo player;
 		aPlayers[i] = player;
@@ -446,7 +452,7 @@ int main()
 		}
 	} while (!playerOnline);
 
-	cout << "All OK boiii" << endl;
+	cout << "All OK, start!" << endl;
 	/*while (true) {
 		int temp = 0;
 	}*/
@@ -486,9 +492,9 @@ int main()
 				{
 					//int8_t header = (int8_t)PacketType::PT_MOVE;
 					//sf::Packet pckLeft;
-					posX = posX - 1;
-					cout << "Positions to send: " << posX << ", " << posY << endl;
-					AccumMove acc(posX, -1, 0, posX, posY);
+					deltaX -= 1;
+					cout << "Delta to send: " << deltaX << ", " << deltaY << endl;
+					AccumMove acc(posX, num, deltaX, deltaY, posX, posY);
 					aMoves.push_back(acc);
 					cout << "Added to aMoves: " << aMoves.size() << endl;
 					//pckLeft << header << num << posX << posY;
@@ -499,7 +505,11 @@ int main()
 				{
 					//int8_t header = (int8_t)PacketType::PT_MOVE;
 					//sf::Packet pckRight;
-					posX = posX + 1;
+					deltaX += 1;
+					cout << "Delta to send: " << deltaX << ", " << deltaY << endl;
+					AccumMove acc(posX, num, deltaX, deltaY, posX, posY);
+					aMoves.push_back(acc);
+					cout << "Added to aMoves: " << aMoves.size() << endl;			
 					//pckRight << header << num << posX << posY;
 					//aSocket->send(pckRight, SERVER_IP, SERVER_PORT);
 				}
@@ -507,7 +517,11 @@ int main()
 				{
 					//int8_t header = (int8_t)PacketType::PT_MOVE;
 					//sf::Packet pckUp;
-					posY = posY - 1;
+					deltaY -= 1;
+					cout << "Delta to send: " << deltaX << ", " << deltaY << endl;
+					AccumMove acc(posX, num, deltaX, deltaY, posX, posY);
+					aMoves.push_back(acc);
+					cout << "Added to aMoves: " << aMoves.size() << endl;			
 					//pckUp << header << num << posX << posY;
 					//aSocket->send(pckUp, SERVER_IP, SERVER_PORT);
 				}
@@ -515,8 +529,11 @@ int main()
 				{
 					//int8_t header = (int8_t)PacketType::PT_MOVE;
 					//sf::Packet pckDown;
-					posY = posY + 1;
-					//pckDown << header << num << posX << posY;
+					deltaY += 1;
+					cout << "Delta to send: " << deltaX << ", " << deltaY << endl;
+					AccumMove acc(posX, num, deltaX, deltaY, posX, posY);
+					aMoves.push_back(acc);
+					cout << "Added to aMoves: " << aMoves.size() << endl;					//pckDown << header << num << posX << posY;
 					//aSocket->send(pckDown, SERVER_IP, SERVER_PORT);
 				}
 				break;

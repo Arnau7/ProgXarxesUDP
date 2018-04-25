@@ -22,10 +22,11 @@ class AccumMove
 public:
 
 	int idMove;
+	int idPlayer;
 	int delta_Xs, delta_Ys;
 	int absolute_X, absolute_Y;
 	AccumMove();
-	AccumMove(int _idMove, int _delta_Xs, int _delta_Ys, int _absolute_X, int _absolute_Y);
+	AccumMove(int _idMove, int _idPlayer, int _delta_Xs, int _delta_Ys, int _absolute_X, int _absolute_Y);
 	sf::Packet CreatePacket();
 	~AccumMove();
 };
