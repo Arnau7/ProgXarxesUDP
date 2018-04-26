@@ -91,7 +91,8 @@ enum PacketType
 	PT_NEWPLAYER = 8,
 	PT_MOVE = 9,
 	PT_START = 10,
-	PT_COIN = 11
+	PT_COIN = 11,
+	PT_PING = 12
 };
 
 bool playerOnline = false;
@@ -285,7 +286,8 @@ void receieveMessage(UdpSocket* socket, string nickname) {
 	IpAddress ip;
 	unsigned short port;
 	Packet newPack;
-
+	IpAddress serverIp = SERVER_IP;
+	unsigned short port = SERVER_PORT;
 	cout << "Waiting" << endl;
 
 	while (true) {
@@ -307,8 +309,7 @@ void receieveMessage(UdpSocket* socket, string nickname) {
 			//Used to make the player use a new nick in case it is used
 			else if (header == PT_USEDNICK) {
 				// TODO the player can't ask for a new name, also he's still sending messages of hello
-				IpAddress serverIp = SERVER_IP;
-				unsigned short port = SERVER_PORT;
+				
 				cout << "Another name: " << endl;
 				cin >> nickname;
 				Packet pck;
@@ -373,24 +374,30 @@ void receieveMessage(UdpSocket* socket, string nickname) {
 				cout << "Coin position: " << coinX << " , " << coinY << endl;
 				startGame = true;
 			}
+			else if (header == PT_PING) {
+				Packet pckPing;
+				int8_t headerPing = PacketType::PT_PING;
+				pckPing << headerPing;
+				socket->send(pckPing, serverIp, port);
+			}
 
 		}
 	}
 }
-
+/*
 void SendMoves(UdpSocket* socket) {
 	while (true)
 	{
 		if (aMoves.size() > 0) {
-			cout << "Found!" << endl;
+			//cout << "Found!" << endl;
 			list<AccumMove>::iterator it;
 			for (it = aMoves.begin(); it != aMoves.end(); ++it)
 			{
 				Packet pack = it->CreatePacket();
 				int x, y, w, z, i;
-				int8_t pene;
-				pack >> pene >> x >> y >> w >> z >> i;
-				cout << "Send the packet with positions: " << z << ", " << i << endl;
+				int8_t var;
+				pack >> var >> x >> y >> w >> z >> i;
+				//cout << "Send the packet with positions: " << z << ", " << i << endl;
 				socket->send(pack, SERVER_IP, SERVER_PORT);
 			}
 			aMoves.pop_front();
@@ -399,22 +406,8 @@ void SendMoves(UdpSocket* socket) {
 
 		}
 	}
-	/*if (aMoves.size() > 0) {
-		aSocket->send(pckLeft, SERVER_IP, SERVER_PORT);
-	}
-
-	do {
-		if (clockCounter.getElapsedTime().asMilliseconds() >= 500) {
-			Packet pack;
-			int8_t header = (int8_t)PacketType::PT_HELLO;
-			pack << header << nickname;
-			aSocket->send(pack, serverIp, port);
-			cout << "Send, time: " << clockCounter.getElapsedTime().asMilliseconds() << endl;
-			clockCounter.restart();
-		}
-	} while (!playerOnline);*/
 }
-
+*/
 int main()
 {
 	string nickname = "No Nickname";
@@ -424,9 +417,10 @@ int main()
 	IpAddress serverIp = SERVER_IP;
 	unsigned short port = SERVER_PORT;
 	UdpSocket* aSocket = new UdpSocket;
+	aSocket->setBlocking(false);
 	Direction serverDir;
 
-	Clock clockCounter;
+	Clock clockCounter, clockMove;
 
 	int deltaX = 0;
 	int deltaY = 0;
@@ -437,106 +431,110 @@ int main()
 	}
 
 	thread t(receieveMessage, aSocket, nickname);
-	thread sM(SendMoves, aSocket);
+	//thread sM(SendMoves, aSocket);
+
+
 	
 
-	//thread r(rrr);
-	do {
-		if (clockCounter.getElapsedTime().asMilliseconds() >= 500) {
-			Packet pack;
-			int8_t header = (int8_t)PacketType::PT_HELLO;
-			pack << header << nickname;
-			aSocket->send(pack, serverIp, port);
-			cout << "Send, time: " << clockCounter.getElapsedTime().asMilliseconds() << endl;
-			clockCounter.restart();
-		}
-	} while (!playerOnline);
+		//thread r(rrr);
+		do {
+			if (clockCounter.getElapsedTime().asMilliseconds() >= 500) {
+				Packet pack;
+				int8_t header = (int8_t)PacketType::PT_HELLO;
+				pack << header << nickname;
+				aSocket->send(pack, serverIp, port);
+				cout << "Send, time: " << clockCounter.getElapsedTime().asMilliseconds() << endl;
+				clockCounter.restart();
+			}
+		} while (!playerOnline);
 
-	cout << "All OK, start!" << endl;
-	/*while (true) {
-		int temp = 0;
-	}*/
+		cout << "All OK, start!" << endl;
+		/*while (true) {
+			int temp = 0;
+		}*/
 
-	//-----START
+		//-----START
 
-	sf::Vector2f casillaOrigen, casillaDestino;
-	bool casillaMarcada = false;
+		sf::Vector2f casillaOrigen, casillaDestino;
+		bool casillaMarcada = false;
 
-	sf::RenderWindow window(sf::VideoMode(512, 512), "Greedy Coins");
-	while (window.isOpen())
-	{
-		sf::Event event;
-
-		while (window.pollEvent(event))
+		sf::RenderWindow window(sf::VideoMode(512, 512), "Greedy Coins");
+		while (window.isOpen())
 		{
-			switch (event.type)
-			{
-			case sf::Event::Closed:
-				window.close();
-				break;
-			case sf::Event::KeyPressed:
-				/*Clock moveClock;
-				int accumX = 0;
-				int accumY = 0;
-				do {
-					if (clockCounter.getElapsedTime().asMilliseconds() >= 500) {
-						Packet pack;
-						int8_t header = (int8_t)PacketType::PT_HELLO;
-						pack << header << nickname;
-						aSocket->send(pack, serverIp, port);
-						cout << "Send, time: " << clockCounter.getElapsedTime().asMilliseconds() << endl;
-						clockCounter.restart();
-					}
-				} while (!playerOnline);*/
-				if (event.key.code == sf::Keyboard::Left)
-				{
-					//int8_t header = (int8_t)PacketType::PT_MOVE;
-					//sf::Packet pckLeft;
-					deltaX -= 1;
-					cout << "Delta to send: " << deltaX << ", " << deltaY << endl;
-					AccumMove acc(posX, num, deltaX, deltaY, posX, posY);
-					aMoves.push_back(acc);
-					cout << "Added to aMoves: " << aMoves.size() << endl;
-					//pckLeft << header << num << posX << posY;
-					//aSocket->send(pckLeft, SERVER_IP, SERVER_PORT);
+			sf::Event event;
 
-				}
-				else if (event.key.code == sf::Keyboard::Right)
+			while (window.pollEvent(event))
+			{
+				switch (event.type)
 				{
-					//int8_t header = (int8_t)PacketType::PT_MOVE;
-					//sf::Packet pckRight;
-					deltaX += 1;
-					cout << "Delta to send: " << deltaX << ", " << deltaY << endl;
-					AccumMove acc(posX, num, deltaX, deltaY, posX, posY);
-					aMoves.push_back(acc);
-					cout << "Added to aMoves: " << aMoves.size() << endl;			
-					//pckRight << header << num << posX << posY;
-					//aSocket->send(pckRight, SERVER_IP, SERVER_PORT);
-				}
-				else if(event.key.code == sf::Keyboard::Up)
-				{
-					//int8_t header = (int8_t)PacketType::PT_MOVE;
-					//sf::Packet pckUp;
-					deltaY -= 1;
-					cout << "Delta to send: " << deltaX << ", " << deltaY << endl;
-					AccumMove acc(posX, num, deltaX, deltaY, posX, posY);
-					aMoves.push_back(acc);
-					cout << "Added to aMoves: " << aMoves.size() << endl;			
-					//pckUp << header << num << posX << posY;
-					//aSocket->send(pckUp, SERVER_IP, SERVER_PORT);
-				}
-				else if (event.key.code == sf::Keyboard::Down)
-				{
-					//int8_t header = (int8_t)PacketType::PT_MOVE;
-					//sf::Packet pckDown;
-					deltaY += 1;
-					cout << "Delta to send: " << deltaX << ", " << deltaY << endl;
-					AccumMove acc(posX, num, deltaX, deltaY, posX, posY);
-					aMoves.push_back(acc);
-					cout << "Added to aMoves: " << aMoves.size() << endl;					//pckDown << header << num << posX << posY;
-					//aSocket->send(pckDown, SERVER_IP, SERVER_PORT);
-				}
-				break;
+				case sf::Event::Closed:
+					window.close();
+					break;
+				case sf::Event::KeyPressed:
+					/*Clock moveClock;
+					int accumX = 0;
+					int accumY = 0;
+					do {
+						if (clockCounter.getElapsedTime().asMilliseconds() >= 500) {
+							Packet pack;
+							int8_t header = (int8_t)PacketType::PT_HELLO;
+							pack << header << nickname;
+							aSocket->send(pack, serverIp, port);
+							cout << "Send, time: " << clockCounter.getElapsedTime().asMilliseconds() << endl;
+							clockCounter.restart();
+						}
+					} while (!playerOnline);*/
+					if (event.key.code == sf::Keyboard::Left)
+					{
+						//int8_t header = (int8_t)PacketType::PT_MOVE;
+						//sf::Packet pckLeft;
+						deltaX -= 1;
+						//cout << "Delta to send: " << deltaX << ", " << deltaY << endl;
+						//AccumMove acc(posX, num, deltaX, deltaY, posX, posY);
+						//aMoves.push_back(acc);
+						//cout << "Added to aMoves: " << aMoves.size() << endl;
+						//pckLeft << header << num << posX << posY;
+						//aSocket->send(pckLeft, SERVER_IP, SERVER_PORT);
+
+					}
+					else if (event.key.code == sf::Keyboard::Right)
+					{
+						//int8_t header = (int8_t)PacketType::PT_MOVE;
+						//sf::Packet pckRight;
+						deltaX += 1;
+						//cout << "Delta to send: " << deltaX << ", " << deltaY << endl;
+						//AccumMove acc(posX, num, deltaX, deltaY, posX, posY);
+						//aMoves.push_back(acc);
+						//cout << "Added to aMoves: " << aMoves.size() << endl;
+						//pckRight << header << num << posX << posY;
+						//aSocket->send(pckRight, SERVER_IP, SERVER_PORT);
+					}
+
+					if (event.key.code == sf::Keyboard::Up)
+					{
+						//int8_t header = (int8_t)PacketType::PT_MOVE;
+						//sf::Packet pckUp;
+						deltaY -= 1;
+						//cout << "Delta to send: " << deltaX << ", " << deltaY << endl;
+						//AccumMove acc(posX, num, deltaX, deltaY, posX, posY);
+						//aMoves.push_back(acc);
+						//cout << "Added to aMoves: " << aMoves.size() << endl;
+						//pckUp << header << num << posX << posY;
+						//aSocket->send(pckUp, SERVER_IP, SERVER_PORT);
+					}
+					else if (event.key.code == sf::Keyboard::Down)
+					{
+						//int8_t header = (int8_t)PacketType::PT_MOVE;
+						//sf::Packet pckDown;
+						deltaY += 1;
+						//cout << "Delta to send: " << deltaX << ", " << deltaY << endl;
+						//AccumMove acc(posX, num, deltaX, deltaY, posX, posY);
+						//aMoves.push_back(acc);
+						//cout << "Added to aMoves: " << aMoves.size() << endl;
+						//pckDown << header << num << posX << posY;
+						//aSocket->send(pckDown, SERVER_IP, SERVER_PORT);
+					}
+					break;
 				case sf::Event::MouseButtonPressed:
 					if (event.mouseButton.button == sf::Mouse::Left && startGame)
 					{
@@ -577,13 +575,13 @@ int main()
 						}
 					}
 					break;
-			default:
-				break;
+				default:
+					break;
 
+				}
 			}
-		}
 
-		window.clear();
+			window.clear();
 
 			//-----MOVE
 
@@ -614,7 +612,7 @@ int main()
 				textEsperando.setFillColor(sf::Color::Green);
 				window.draw(textEsperando);
 			}
-			else if(startGame)
+			else if (startGame)
 			{
 				//Coin Draw
 				sf::CircleShape shapeCoin(RADIO_AVATAR);
@@ -626,7 +624,7 @@ int main()
 
 				window.draw(shapeCoin);
 
-				for (int i = 0; i < 4; i++) 
+				for (int i = 0; i < 4; i++)
 				{
 					if (i != num) {
 						if (i == 0) {
@@ -674,8 +672,8 @@ int main()
 							window.draw(shapePlayer3);
 						}
 					}
-					
-					else if(i == num){
+
+					else if (i == num) {
 						//Player Draw
 						sf::CircleShape shapePlayer(RADIO_AVATAR);
 						shapePlayer.setFillColor(sf::Color::Green);
@@ -699,13 +697,24 @@ int main()
 					window.draw(rect);
 				}*/
 			}
-			
+
 			//-----MOVED
+			if ((clockMove.getElapsedTime().asMilliseconds() >= 200 && (deltaX != 0 || deltaY != 0)) && startGame) {
+				cout << "Move detected" << endl;
+				AccumMove acc(posX, num, deltaX, deltaY, aPlayers[num].GetX(), aPlayers[num].GetY());
+				deltaX = 0;
+				deltaY = 0;
+				aMoves.push_back(acc);
+				Packet pack = acc.CreatePacket();
+				aSocket->send(pack, SERVER_IP, SERVER_PORT);
+				clockMove.restart();
+			}
+			else{}
 
 			window.display();
 		}
-	
 
+	
 	//getchar();
 	//return 0;
 }

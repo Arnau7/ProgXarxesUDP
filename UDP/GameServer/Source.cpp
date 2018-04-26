@@ -21,7 +21,8 @@ enum PacketType
 	PT_NEWPLAYER = 8,
 	PT_MOVE = 9,
 	PT_START = 10,
-	PT_COIN = 11
+	PT_COIN = 11,
+	PT_PING = 12
 };
 
 struct Direction {
@@ -153,11 +154,11 @@ void receieveMessage(UdpSocket* socket) {
 
 				//COMPROVAR POSICIÓ PLAYER == MONEDA
 
-				std::cout << "Se intenta la pos " << posX << " " << posY << std::endl;
+				//std::cout << "Se intenta la pos " << posX << " " << posY << std::endl;
 				if ((posX >= 0 && posX <= 8) && (posY >= 0 && posY <= 8))
 				{
 					int8_t headerPos = ((int8_t)PacketType::PT_POSITION);
-					std::cout << "Se confirma la pos " << posX << " " << posY << std::endl;
+					//std::cout << "Se confirma la pos " << posX << " " << posY << std::endl;
 					sf::Packet pckSend;
 					
 					//socket->send(pckSend, ip, port);
@@ -180,6 +181,10 @@ void receieveMessage(UdpSocket* socket) {
 					}
 				}
 			}
+			else if (header == PT_PING) 
+			{
+
+			}
 				
 		}
 	}
@@ -191,10 +196,28 @@ int main()
 	UdpSocket* serverSocket = new UdpSocket;
 	serverSocket->bind(50000);
 	Packet pack;
+	Clock clockPing;
 
 	thread rM(receieveMessage, serverSocket);
+
+	Packet packPing;
+	int8_t headerPing = PacketType::PT_PING;
+	packPing << headerPing;
+
 	while (true) {
-		int i = 1;
+		if ((clockPing.getElapsedTime().asMilliseconds() >= 5000)) 
+		{
+			for (int i = 0; i < 4; i++) 
+			{
+				serverSocket->send(packPing, aClientsDir[i].ip, aClientsDir[i].port);
+				aPlayers[i].testPing++;
+				if (aPlayers[i].testPing >= 3) {
+					cout << "Player disconnected" << i << endl;
+				}
+			}
+			clockPing.restart();
+		}
+
 	}
 	return 0;
 }

@@ -1,14 +1,14 @@
 ﻿  Source.cpp
-c:\users\miquel\documents\github\platilla_3projects\progxarxesudp\udp\gameclient\source.cpp(28): warning C4005: 'LADO_CASILLA': redefinición de macro
-  c:\users\miquel\documents\github\platilla_3projects\progxarxesudp\udp\gameclient\source.cpp(23): note: vea la definición anterior de 'LADO_CASILLA'
-c:\users\miquel\documents\github\platilla_3projects\progxarxesudp\udp\gameclient\source.cpp(58): warning C4244: 'inicializando': conversión de 'int' a 'float'; posible pérdida de datos
-c:\users\miquel\documents\github\platilla_3projects\progxarxesudp\udp\gameclient\source.cpp(59): warning C4244: 'inicializando': conversión de 'int' a 'float'; posible pérdida de datos
-c:\users\miquel\documents\github\platilla_3projects\progxarxesudp\udp\gameclient\source.cpp(597): warning C4244: 'argumento': conversión de 'int' a 'float'; posible pérdida de datos
-c:\users\miquel\documents\github\platilla_3projects\progxarxesudp\udp\gameclient\source.cpp(623): warning C4244: 'argumento': conversión de 'int' a 'float'; posible pérdida de datos
-c:\users\miquel\documents\github\platilla_3projects\progxarxesudp\udp\gameclient\source.cpp(637): warning C4244: 'argumento': conversión de 'int' a 'float'; posible pérdida de datos
-c:\users\miquel\documents\github\platilla_3projects\progxarxesudp\udp\gameclient\source.cpp(648): warning C4244: 'argumento': conversión de 'int' a 'float'; posible pérdida de datos
-c:\users\miquel\documents\github\platilla_3projects\progxarxesudp\udp\gameclient\source.cpp(659): warning C4244: 'argumento': conversión de 'int' a 'float'; posible pérdida de datos
-c:\users\miquel\documents\github\platilla_3projects\progxarxesudp\udp\gameclient\source.cpp(670): warning C4244: 'argumento': conversión de 'int' a 'float'; posible pérdida de datos
-c:\users\miquel\documents\github\platilla_3projects\progxarxesudp\udp\gameclient\source.cpp(683): warning C4244: 'argumento': conversión de 'int' a 'float'; posible pérdida de datos
-  GameClient.vcxproj -> C:\Users\Miquel\Documents\GitHub\Platilla_3Projects\ProgXarxesUDP\UDP\x64\Debug\GameClient.exe
-  GameClient.vcxproj -> C:\Users\Miquel\Documents\GitHub\Platilla_3Projects\ProgXarxesUDP\UDP\x64\Debug\GameClient.pdb (Partial PDB)
+c:\users\aruiz\documents\github\progxarxesudp\udp\gameclient\source.cpp(28): warning C4005: 'LADO_CASILLA': macro redefinition
+  c:\users\aruiz\documents\github\progxarxesudp\udp\gameclient\source.cpp(23): note: see previous definition of 'LADO_CASILLA'
+c:\users\aruiz\documents\github\progxarxesudp\udp\gameclient\source.cpp(58): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+c:\users\aruiz\documents\github\progxarxesudp\udp\gameclient\source.cpp(59): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+c:\users\aruiz\documents\github\progxarxesudp\udp\gameclient\source.cpp(588): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\aruiz\documents\github\progxarxesudp\udp\gameclient\source.cpp(614): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\aruiz\documents\github\progxarxesudp\udp\gameclient\source.cpp(628): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\aruiz\documents\github\progxarxesudp\udp\gameclient\source.cpp(639): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\aruiz\documents\github\progxarxesudp\udp\gameclient\source.cpp(650): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\aruiz\documents\github\progxarxesudp\udp\gameclient\source.cpp(661): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\aruiz\documents\github\progxarxesudp\udp\gameclient\source.cpp(674): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+  GameClient.vcxproj -> C:\Users\aruiz\Documents\GitHub\ProgXarxesUDP\UDP\x64\Debug\GameClient.exe
+  GameClient.vcxproj -> C:\Users\aruiz\Documents\GitHub\ProgXarxesUDP\UDP\x64\Debug\GameClient.pdb (Partial PDB)

@@ -10,7 +10,9 @@ class PlayerInfo
 	int x, y;
 	int lives, coins;
 
+
 public:
+	int testPing;
 	PlayerInfo();
 	PlayerInfo(int _id, std::string _nickname);
 	void SetPosition(int _x, int _y);
