@@ -24,7 +24,8 @@ enum PacketType
 	PT_COIN = 11,
 	PT_PING = 12,
 	PT_WIN = 13,
-	PT_PLAYING = 14
+	PT_PLAYING = 14,
+	PT_ACKMOVE = 15
 };
 
 struct Direction {
@@ -189,10 +190,18 @@ void receieveMessage(UdpSocket* socket) {
 						}
 					}
 					else {
-						int8_t header2 = ((int8_t)PacketType::PT_MOVE);
-						pckSend << headerPos << header2 << playerNum << posX << posY;
 						for (int i = 0; i < 4; i++) {
-							socket->send(pckSend, aClientsDir[i].ip, aClientsDir[i].port);
+							if (playerNum != i) {
+								int8_t header2 = ((int8_t)PacketType::PT_MOVE);
+								pckSend << headerPos << header2 << playerNum << posX << posY;
+								socket->send(pckSend, aClientsDir[i].ip, aClientsDir[i].port);
+							}
+							else {
+								cout << "Send ACK to " << i << endl;
+								int8_t headerACK = ((int8_t)PacketType::PT_ACKMOVE);
+								pckSend << headerPos << headerACK << idMove << posX << posY;
+								socket->send(pckSend, aClientsDir[playerNum].ip, aClientsDir[playerNum].port);
+							}
 						}
 					}
 				}

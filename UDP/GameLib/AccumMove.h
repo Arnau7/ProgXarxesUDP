@@ -18,7 +18,10 @@ class AccumMove
 		PT_MOVE = 9,
 		PT_START = 10,
 		PT_COIN = 11,
-		PT_PING = 12
+		PT_PING = 12,
+		PT_WIN = 13,
+		PT_PLAYING = 14,
+		PT_ACKMOVE = 15
 	};
 public:
 

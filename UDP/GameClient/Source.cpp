@@ -95,7 +95,8 @@ enum PacketType
 	PT_COIN = 11,
 	PT_PING = 12,
 	PT_WIN = 13,
-	PT_PLAYING = 14
+	PT_PLAYING = 14, 
+	PT_ACKMOVE = 15
 };
 
 bool playerOnline = false;
@@ -188,13 +189,34 @@ void receieveMessage(UdpSocket* socket, string nickname) {
 
 					}
 				}
+
+				else if (header2 == PT_ACKMOVE) {
+					cout << "Received ack" <<  aMoves.size() << endl;
+					int confirmedX, confirmedY, numMove;
+					newPack >> numMove >> confirmedX >> confirmedY;
+					aPlayers[num].SetPosition(confirmedX, confirmedY);
+
+					list<AccumMove>::iterator it;
+					for (it = aMoves.begin(); it != aMoves.end(); ++it)
+					{
+						if (it->idMove == numMove) {
+							aMoves.erase(aMoves.begin(), it);
+							cout << "Found, erased!" << endl;
+							break;
+						}
+						else {}
+					}
+				}
+
 				else if (header2 == PT_MOVE) {
+					cout << "Move" << aMoves.size() << endl;
 					int playerNum;
 					int pX, pY;
 					newPack >> playerNum >> pX >> pY;
 					aPlayers[playerNum].SetPosition(pX, pY);
 					//cout << "Recibo la confirmacion: " << pX << " " << pY << endl;
 				}
+
 			}
 			else if (header == PT_START) 
 			{
@@ -229,7 +251,7 @@ void receieveMessage(UdpSocket* socket, string nickname) {
 				int8_t headerPing = PacketType::PT_PING;
 				pckPing << headerPing << num;
 				socket->send(pckPing, serverIp, port);
-				cout << "Ping sent back" << endl;
+				//cout << "Ping sent back" << endl;
 			}
 
 		}
