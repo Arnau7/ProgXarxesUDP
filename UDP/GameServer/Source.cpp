@@ -173,9 +173,9 @@ void receieveMessage(UdpSocket* socket) {
 						aPlayers[playerNum].coins++;
 
 						//IF PLAYER WINS
-						if (aPlayers[playerNum].coins > 3) {
+						if (aPlayers[playerNum].coins >= 3) {
 							int8_t header3 = (int8_t)PacketType::PT_WIN;
-							pckSend << header3;
+							pckSend << header3 << playerNum;
 							for (int i = 0; i < 4; i++) {
 								socket->send(pckSend, aClientsDir[i].ip, aClientsDir[i].port);
 							}

@@ -5,7 +5,6 @@
 class PlayerInfo
 {
 	int id;
-	std::string nickname;
 	sf::Vector2i position;
 	int x, y;
 	int lives;
@@ -15,6 +14,7 @@ public:
 	int testPing;
 	int coins;
 	bool win;
+	std::string nickname;
 	PlayerInfo();
 	PlayerInfo(int _id, std::string _nickname);
 	void SetPosition(int _x, int _y);

@@ -14,6 +14,9 @@
 #include <AccumMove.h>
 #include <list>
 
+#define SCREEN_WIDTH 512
+#define SCREEN_HEIGHT 512
+
 #define SERVER_IP "localhost"
 #define SERVER_PORT 50000
 
@@ -181,7 +184,9 @@ void receieveMessage(UdpSocket* socket, string nickname) {
 					newPack >> header3;
 					if (header3 == PT_WIN)
 					{
-						aPlayers[playerNum].win = true;
+						int winner = 0;
+						newPack >> winner;
+						aPlayers[winner].win = true;
 						gameOver = true;
 					}
 					else if (header3 == PT_PLAYING)
@@ -327,7 +332,7 @@ int main()
 		sf::Vector2f casillaOrigen, casillaDestino;
 		bool casillaMarcada = false;
 
-		sf::RenderWindow window(sf::VideoMode(512, 512), "Greedy Coins");
+		sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Greedy Coins");
 		while (window.isOpen())
 		{
 			sf::Event event;
@@ -429,15 +434,17 @@ int main()
 			}
 			else if (startGame)
 			{
-				//Coin Draw
-				sf::CircleShape shapeCoin(RADIO_AVATAR);
-				shapeCoin.setFillColor(sf::Color::Yellow);
+				if (!gameOver) {
+					//Coin Draw
+					sf::CircleShape shapeCoin(RADIO_AVATAR);
+					shapeCoin.setFillColor(sf::Color::Yellow);
 
-				sf::Vector2f posCoin(coinX, coinY);
-				posCoin = BoardToWindows(posCoin);
-				shapeCoin.setPosition(posCoin);
+					sf::Vector2f posCoin(coinX, coinY);
+					posCoin = BoardToWindows(posCoin);
+					shapeCoin.setPosition(posCoin);
 
-				window.draw(shapeCoin);
+					window.draw(shapeCoin);
+				}
 
 				for (int i = 0; i < 4; i++)
 				{
@@ -512,17 +519,23 @@ int main()
 
 				if (aPlayers[num].win == true) 
 				{
-					sf::Text textWin("YOU WIN", font);
-					textWin.setPosition(sf::Vector2f(180, 200));
+
+					sf::Text textWin("YOU WIN " + aPlayers[num].nickname, font);
+					//center text
+					sf::FloatRect textRect = textWin.getLocalBounds();
+					textWin.setOrigin(textRect.width / 2, textRect.height / 2);
+					textWin.setPosition(sf::Vector2f(SCREEN_WIDTH/2, SCREEN_HEIGHT/2));
 					textWin.setCharacterSize(30);
 					textWin.setStyle(sf::Text::Bold);
-					textWin.setFillColor(sf::Color::Green);
+					textWin.setFillColor(sf::Color::Yellow);
 					window.draw(textWin);
 				}
 				else
 				{
-					sf::Text textLose("YOU LOSE", font);
-					textLose.setPosition(sf::Vector2f(180, 200));
+					sf::Text textLose("YOU LOSE " + aPlayers[num].nickname, font);
+					sf::FloatRect textRect = textLose.getLocalBounds();
+					textLose.setOrigin(textRect.width / 2, textRect.height / 2);
+					textLose.setPosition(sf::Vector2f(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2));
 					textLose.setCharacterSize(30);
 					textLose.setStyle(sf::Text::Bold);
 					textLose.setFillColor(sf::Color::Red);
