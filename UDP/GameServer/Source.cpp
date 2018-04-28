@@ -22,7 +22,9 @@ enum PacketType
 	PT_MOVE = 9,
 	PT_START = 10,
 	PT_COIN = 11,
-	PT_PING = 12
+	PT_PING = 12,
+	PT_WIN = 13,
+	PT_PLAYING = 14
 };
 
 struct Direction {
@@ -163,14 +165,28 @@ void receieveMessage(UdpSocket* socket) {
 					
 					//socket->send(pckSend, ip, port);
 					if (posX == coinX && posY == coinY) {
-						int8_t header2 = ((int8_t)PacketType::PT_COIN);
+						int8_t header2 = (int8_t)PacketType::PT_COIN;
 						pckSend << headerPos << header2 << playerNum << posX << posY;
 						NewCoinPosition();
 						pckSend << coinX << coinY;
-						for (int i = 0; i < 4; i++) {
-							socket->send(pckSend, aClientsDir[i].ip, aClientsDir[i].port);
-						}
+						aPlayers[playerNum].coins++;
 
+						//IF PLAYER WINS
+						if (aPlayers[playerNum].coins > 3) {
+							int8_t header3 = (int8_t)PacketType::PT_WIN;
+							pckSend << header3;
+							for (int i = 0; i < 4; i++) {
+								socket->send(pckSend, aClientsDir[i].ip, aClientsDir[i].port);
+							}
+						}
+						//IF NO PLAYER WINS
+						else {
+							int8_t header3 = (int8_t)PacketType::PT_PLAYING;
+							pckSend << header3;
+							for (int i = 0; i < 4; i++) {
+								socket->send(pckSend, aClientsDir[i].ip, aClientsDir[i].port);
+							}
+						}
 					}
 					else {
 						int8_t header2 = ((int8_t)PacketType::PT_MOVE);
@@ -181,9 +197,11 @@ void receieveMessage(UdpSocket* socket) {
 					}
 				}
 			}
-			else if (header == PT_PING) 
+			else if (header == PacketType::PT_PING) 
 			{
-
+				int id = 0;
+				pack >> id;
+				aPlayers[id].testPing = 0;
 			}
 				
 		}
@@ -204,20 +222,23 @@ int main()
 	int8_t headerPing = PacketType::PT_PING;
 	packPing << headerPing;
 
-	while (true) {
-		if ((clockPing.getElapsedTime().asMilliseconds() >= 5000)) 
+		while (true) 
 		{
-			for (int i = 0; i < 4; i++) 
-			{
-				serverSocket->send(packPing, aClientsDir[i].ip, aClientsDir[i].port);
-				aPlayers[i].testPing++;
-				if (aPlayers[i].testPing >= 3) {
-					cout << "Player disconnected" << i << endl;
+			if (playersOnline > 0) {
+				if ((clockPing.getElapsedTime().asMilliseconds() >= 5000))
+				{
+					for (int i = 0; i < playersOnline; i++)
+					{
+						serverSocket->send(packPing, aClientsDir[i].ip, aClientsDir[i].port);
+						aPlayers[i].testPing++;
+						if (aPlayers[i].testPing >= 3)
+						{
+							cout << "Player disconnected: " << i << endl;
+						}
+					}
+					clockPing.restart();
 				}
 			}
-			clockPing.restart();
 		}
-
-	}
 	return 0;
 }

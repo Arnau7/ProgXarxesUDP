@@ -12,6 +12,8 @@ PlayerInfo::PlayerInfo(int _id, std::string _nickname)
 	id = _id;
 	nickname = _nickname;
 	testPing = 0;
+	coins = 0;
+	win = false;
 }
 
 void PlayerInfo::SetPosition(int _x, int _y) 

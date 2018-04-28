@@ -40,6 +40,7 @@ int posX, posY, posP2X, posP2Y, posP3X, posP3Y, posP4X, posP4Y;
 * Si vale false --> No podemos interactuar con el tablero y aparece un letrero de "esperando"
 */
 bool startGame = false;
+bool gameOver = false;
 
 /**
 * Ahora mismo no tiene efecto, pero luego lo necesitarás para validar los movimientos
@@ -92,7 +93,9 @@ enum PacketType
 	PT_MOVE = 9,
 	PT_START = 10,
 	PT_COIN = 11,
-	PT_PING = 12
+	PT_PING = 12,
+	PT_WIN = 13,
+	PT_PLAYING = 14
 };
 
 bool playerOnline = false;
@@ -103,6 +106,7 @@ int coinY = 0;
 list<AccumMove>aMoves;
 Clock clockMoves;
 int idMove = 0;
+int playersOnline = 0;
 
 struct Direction {
 public:
@@ -113,178 +117,9 @@ public:
 	Direction() {}
 };
 
-/*void DibujaSFML()
-{
-	sf::Vector2f casillaOrigen, casillaDestino;
-	bool casillaMarcada = false;
-
-	sf::RenderWindow window(sf::VideoMode(512, 512), "Greedy Coins");
-	while (window.isOpen())
-	{
-		sf::Event event;
-
-		//Este primer WHILE es para controlar los eventos del mouse
-		while (window.pollEvent(event))
-		{
-			switch (event.type)
-			{
-			case sf::Event::Closed:
-				window.close();
-				break;
-			case sf::Event::MouseButtonPressed:
-				if (event.mouseButton.button == sf::Mouse::Left && tienesTurno)
-				{
-					int x = event.mouseButton.x;
-					int y = event.mouseButton.y;
-					if (!casillaMarcada)
-					{
-						casillaOrigen = TransformaCoordenadaACasilla(x, y);
-						casillaMarcada = true;
-						//TODO: Comprobar que la casilla marcada coincide con las posición del raton (si le toca al ratón)
-						//o con la posicion de alguna de las piezas del gato (si le toca al gato)
-
-					}
-					else
-					{
-						casillaDestino = TransformaCoordenadaACasilla(x, y);
-						if (casillaOrigen.x == casillaDestino.x && casillaOrigen.y == casillaDestino.y)
-						{
-							casillaMarcada = false;
-							//Si me vuelven a picar sobre la misma casilla, la desmarco
-						}
-						else
-						{
-							if (quienSoy == TipoProceso::RATON)
-							{
-								//TODO: Validar que el destino del ratón es correcto
-
-								//TODO: Si es correcto, modificar la posición del ratón y enviar las posiciones al padre
-
-							}
-							else if (quienSoy == TipoProceso::GATO)
-							{
-								//TODO: Validar que el destino del gato es correcto
-
-								//TODO: Si es correcto, modificar la posición de la pieza correspondiente del gato y enviar las posiciones al padre
-							}
-						}
-					}
-				}
-				break;
-			default:
-				break;
-
-			}
-		}
-
-		window.clear();
-
-		//A partir de aquí es para pintar por pantalla
-		//Este FOR es para el tablero
-		for (int i = 0; i<11; i++)
-		{
-			for (int j = 0; j<11; j++)
-			{
-				sf::RectangleShape rectBlanco(sf::Vector2f(LADO_CASILLA, LADO_CASILLA));
-				rectBlanco.setFillColor(sf::Color::White);
-				if (i % 2 == 0)
-				{
-					//Empieza por el blanco
-					if (j % 2 == 0)
-					{
-						rectBlanco.setPosition(sf::Vector2f(i*LADO_CASILLA, j*LADO_CASILLA));
-						window.draw(rectBlanco);
-					}
-				}
-				else
-				{
-					//Empieza por el negro
-					if (j % 2 == 1)
-					{
-						rectBlanco.setPosition(sf::Vector2f(i*LADO_CASILLA, j*LADO_CASILLA));
-						window.draw(rectBlanco);
-					}
-				}
-			}
-		}
-
-		//TODO: Para pintar el circulito del ratón
-		sf::CircleShape shapeRaton(RADIO_AVATAR);
-		shapeRaton.setFillColor(sf::Color::Blue);
-		sf::Vector2f posicionRaton(4.f, 7.f);
-		posicionRaton = BoardToWindows(posicionRaton);
-		shapeRaton.setPosition(posicionRaton);
-		window.draw(shapeRaton);
-
-		//Pintamos los cuatro circulitos del gato
-		sf::CircleShape shapeGato(RADIO_AVATAR);
-		shapeGato.setFillColor(sf::Color::Red);
-
-		sf::Vector2f positionGato1(1.f, 0.f);
-		positionGato1 = BoardToWindows(positionGato1);
-		shapeGato.setPosition(positionGato1);
-
-		window.draw(shapeGato);
-
-		sf::Vector2f positionGato2(3.f, 0.f);
-		positionGato2 = BoardToWindows(positionGato2);
-		shapeGato.setPosition(positionGato2);
-
-		window.draw(shapeGato);
-
-		sf::Vector2f positionGato3(5.f, 0.f);
-		positionGato3 = BoardToWindows(positionGato3);
-		shapeGato.setPosition(positionGato3);
-
-		window.draw(shapeGato);
-
-		sf::Vector2f positionGato4(7.f, 0.f);
-		positionGato4 = BoardToWindows(positionGato4);
-		shapeGato.setPosition(positionGato4);
-
-		window.draw(shapeGato);
-
-
-		if (!tienesTurno)
-		{
-			//Si no tengo el turno, pinto un letrerito de "Esperando..."
-			sf::Font font;
-			std::string pathFont = "arial.ttf";
-			if (!font.loadFromFile(pathFont))
-			{
-				std::cout << "No se pudo cargar la fuente" << std::endl;
-			}
-
-
-			sf::Text textEsperando("Esperando...", font);
-			textEsperando.setPosition(sf::Vector2f(180, 200));
-			textEsperando.setCharacterSize(30);
-			textEsperando.setStyle(sf::Text::Bold);
-			textEsperando.setFillColor(sf::Color::Green);
-			window.draw(textEsperando);
-		}
-		else
-		{
-			//Si tengo el turno y hay una casilla marcada, la marco con un recuadro amarillo.
-			if (casillaMarcada)
-			{
-				sf::RectangleShape rect(sf::Vector2f(LADO_CASILLA, LADO_CASILLA));
-				rect.setPosition(sf::Vector2f(casillaOrigen.x*LADO_CASILLA, casillaOrigen.y*LADO_CASILLA));
-				rect.setFillColor(sf::Color::Transparent);
-				rect.setOutlineThickness(5);
-				rect.setOutlineColor(sf::Color::Yellow);
-				window.draw(rect);
-			}
-		}
-
-		window.display();
-	}
-
-}*/
-
 void receieveMessage(UdpSocket* socket, string nickname) {
 	IpAddress ip;
-	unsigned short port;
+	//unsigned short port;
 	Packet newPack;
 	IpAddress serverIp = SERVER_IP;
 	unsigned short port = SERVER_PORT;
@@ -334,17 +169,31 @@ void receieveMessage(UdpSocket* socket, string nickname) {
 					int cX, cY;
 					newPack >> playerNum >> pX >> pY >> cX >> cY;
 					aPlayers[playerNum].SetPosition(pX, pY);
+					aPlayers[playerNum].coins++;	//Increase coins collected of this player
 					coinX = cX;
 					coinY = cY;
-					cout << "Recibo la confirmacion: " << pX << " " << pY << endl;
+					//cout << "Recibo la confirmacion: " << pX << " " << pY << endl;
 					cout << "New coin pos: " << cX << " " << cY << endl;
+					cout << "Player " << playerNum << " " << "coins: " << aPlayers[playerNum].coins << endl;
+
+					int8_t header3;
+					newPack >> header3;
+					if (header3 == PT_WIN)
+					{
+						aPlayers[playerNum].win = true;
+						gameOver = true;
+					}
+					else if (header3 == PT_PLAYING)
+					{
+
+					}
 				}
 				else if (header2 == PT_MOVE) {
 					int playerNum;
 					int pX, pY;
 					newPack >> playerNum >> pX >> pY;
 					aPlayers[playerNum].SetPosition(pX, pY);
-					cout << "Recibo la confirmacion: " << pX << " " << pY << endl;
+					//cout << "Recibo la confirmacion: " << pX << " " << pY << endl;
 				}
 			}
 			else if (header == PT_START) 
@@ -369,6 +218,7 @@ void receieveMessage(UdpSocket* socket, string nickname) {
 						}
 					}
 				}
+				playersOnline = 4;
 				
 				newPack >> coinX >> coinY;
 				cout << "Coin position: " << coinX << " , " << coinY << endl;
@@ -377,8 +227,9 @@ void receieveMessage(UdpSocket* socket, string nickname) {
 			else if (header == PT_PING) {
 				Packet pckPing;
 				int8_t headerPing = PacketType::PT_PING;
-				pckPing << headerPing;
+				pckPing << headerPing << num;
 				socket->send(pckPing, serverIp, port);
+				cout << "Ping sent back" << endl;
 			}
 
 		}
@@ -432,10 +283,6 @@ int main()
 
 	thread t(receieveMessage, aSocket, nickname);
 	//thread sM(SendMoves, aSocket);
-
-
-	
-
 		//thread r(rrr);
 		do {
 			if (clockCounter.getElapsedTime().asMilliseconds() >= 500) {
@@ -471,107 +318,56 @@ int main()
 					window.close();
 					break;
 				case sf::Event::KeyPressed:
-					/*Clock moveClock;
-					int accumX = 0;
-					int accumY = 0;
-					do {
-						if (clockCounter.getElapsedTime().asMilliseconds() >= 500) {
-							Packet pack;
-							int8_t header = (int8_t)PacketType::PT_HELLO;
-							pack << header << nickname;
-							aSocket->send(pack, serverIp, port);
-							cout << "Send, time: " << clockCounter.getElapsedTime().asMilliseconds() << endl;
-							clockCounter.restart();
-						}
-					} while (!playerOnline);*/
-					if (event.key.code == sf::Keyboard::Left)
-					{
-						//int8_t header = (int8_t)PacketType::PT_MOVE;
-						//sf::Packet pckLeft;
-						deltaX -= 1;
-						//cout << "Delta to send: " << deltaX << ", " << deltaY << endl;
-						//AccumMove acc(posX, num, deltaX, deltaY, posX, posY);
-						//aMoves.push_back(acc);
-						//cout << "Added to aMoves: " << aMoves.size() << endl;
-						//pckLeft << header << num << posX << posY;
-						//aSocket->send(pckLeft, SERVER_IP, SERVER_PORT);
-
-					}
-					else if (event.key.code == sf::Keyboard::Right)
-					{
-						//int8_t header = (int8_t)PacketType::PT_MOVE;
-						//sf::Packet pckRight;
-						deltaX += 1;
-						//cout << "Delta to send: " << deltaX << ", " << deltaY << endl;
-						//AccumMove acc(posX, num, deltaX, deltaY, posX, posY);
-						//aMoves.push_back(acc);
-						//cout << "Added to aMoves: " << aMoves.size() << endl;
-						//pckRight << header << num << posX << posY;
-						//aSocket->send(pckRight, SERVER_IP, SERVER_PORT);
-					}
-
-					if (event.key.code == sf::Keyboard::Up)
-					{
-						//int8_t header = (int8_t)PacketType::PT_MOVE;
-						//sf::Packet pckUp;
-						deltaY -= 1;
-						//cout << "Delta to send: " << deltaX << ", " << deltaY << endl;
-						//AccumMove acc(posX, num, deltaX, deltaY, posX, posY);
-						//aMoves.push_back(acc);
-						//cout << "Added to aMoves: " << aMoves.size() << endl;
-						//pckUp << header << num << posX << posY;
-						//aSocket->send(pckUp, SERVER_IP, SERVER_PORT);
-					}
-					else if (event.key.code == sf::Keyboard::Down)
-					{
-						//int8_t header = (int8_t)PacketType::PT_MOVE;
-						//sf::Packet pckDown;
-						deltaY += 1;
-						//cout << "Delta to send: " << deltaX << ", " << deltaY << endl;
-						//AccumMove acc(posX, num, deltaX, deltaY, posX, posY);
-						//aMoves.push_back(acc);
-						//cout << "Added to aMoves: " << aMoves.size() << endl;
-						//pckDown << header << num << posX << posY;
-						//aSocket->send(pckDown, SERVER_IP, SERVER_PORT);
-					}
-					break;
-				case sf::Event::MouseButtonPressed:
-					if (event.mouseButton.button == sf::Mouse::Left && startGame)
-					{
-						int x = event.mouseButton.x;
-						int y = event.mouseButton.y;
-						if (!casillaMarcada)
+					if (!gameOver) {
+						if (event.key.code == sf::Keyboard::Left)
 						{
-							casillaOrigen = TransformaCoordenadaACasilla(x, y);
-							casillaMarcada = true;
-
-							//TODO: Comprobar que la casilla marcada coincide con las posición de la moneda (si le toca a la moneda)
+							//int8_t header = (int8_t)PacketType::PT_MOVE;
+							//sf::Packet pckLeft;
+							deltaX -= 1;
+							//cout << "Delta to send: " << deltaX << ", " << deltaY << endl;
+							//AccumMove acc(posX, num, deltaX, deltaY, posX, posY);
+							//aMoves.push_back(acc);
+							//cout << "Added to aMoves: " << aMoves.size() << endl;
+							//pckLeft << header << num << posX << posY;
+							//aSocket->send(pckLeft, SERVER_IP, SERVER_PORT);
 
 						}
-						else
+						else if (event.key.code == sf::Keyboard::Right)
 						{
-							casillaDestino = TransformaCoordenadaACasilla(x, y);
-							if (casillaOrigen.x == casillaDestino.x && casillaOrigen.y == casillaDestino.y)
-							{
-								casillaMarcada = false;
-								//Si me vuelven a picar sobre la misma casilla, la desmarco
-							}
-							else
-							{
-								if (quienSoy == TipoProceso::RATON)
-								{
-									//TODO: Validar que el destino del ratón es correcto
+							//int8_t header = (int8_t)PacketType::PT_MOVE;
+							//sf::Packet pckRight;
+							deltaX += 1;
+							//cout << "Delta to send: " << deltaX << ", " << deltaY << endl;
+							//AccumMove acc(posX, num, deltaX, deltaY, posX, posY);
+							//aMoves.push_back(acc);
+							//cout << "Added to aMoves: " << aMoves.size() << endl;
+							//pckRight << header << num << posX << posY;
+							//aSocket->send(pckRight, SERVER_IP, SERVER_PORT);
+						}
 
-									//TODO: Si es correcto, modificar la posición del ratón y enviar las posiciones al padre
-
-								}
-								else if (quienSoy == TipoProceso::GATO)
-								{
-									//TODO: Validar que el destino del gato es correcto
-
-									//TODO: Si es correcto, modificar la posición de la pieza correspondiente del gato y enviar las posiciones al padre
-								}
-							}
+						if (event.key.code == sf::Keyboard::Up)
+						{
+							//int8_t header = (int8_t)PacketType::PT_MOVE;
+							//sf::Packet pckUp;
+							deltaY -= 1;
+							//cout << "Delta to send: " << deltaX << ", " << deltaY << endl;
+							//AccumMove acc(posX, num, deltaX, deltaY, posX, posY);
+							//aMoves.push_back(acc);
+							//cout << "Added to aMoves: " << aMoves.size() << endl;
+							//pckUp << header << num << posX << posY;
+							//aSocket->send(pckUp, SERVER_IP, SERVER_PORT);
+						}
+						else if (event.key.code == sf::Keyboard::Down)
+						{
+							//int8_t header = (int8_t)PacketType::PT_MOVE;
+							//sf::Packet pckDown;
+							deltaY += 1;
+							//cout << "Delta to send: " << deltaX << ", " << deltaY << endl;
+							//AccumMove acc(posX, num, deltaX, deltaY, posX, posY);
+							//aMoves.push_back(acc);
+							//cout << "Added to aMoves: " << aMoves.size() << endl;
+							//pckDown << header << num << posX << posY;
+							//aSocket->send(pckDown, SERVER_IP, SERVER_PORT);
 						}
 					}
 					break;
@@ -580,10 +376,7 @@ int main()
 
 				}
 			}
-
 			window.clear();
-
-			//-----MOVE
 
 			if (!startGame)
 			{
@@ -685,17 +478,34 @@ int main()
 						window.draw(shapePlayer);
 					}
 				}
-
-				//Si tengo el turno y hay una casilla marcada, la marco con un recuadro amarillo.
-				/*if (casillaMarcada)
+			}
+			if (gameOver) 
+			{
+				sf::Font font;
+				std::string pathFont = "arial.ttf";
+				if (!font.loadFromFile(pathFont))
 				{
-					sf::RectangleShape rect(sf::Vector2f(LADO_CASILLA, LADO_CASILLA));
-					rect.setPosition(sf::Vector2f(casillaOrigen.x*LADO_CASILLA, casillaOrigen.y*LADO_CASILLA));
-					rect.setFillColor(sf::Color::Transparent);
-					rect.setOutlineThickness(5);
-					rect.setOutlineColor(sf::Color::Yellow);
-					window.draw(rect);
-				}*/
+					std::cout << "No se pudo cargar la fuente" << std::endl;
+				}
+
+				if (aPlayers[num].win == true) 
+				{
+					sf::Text textWin("YOU WIN", font);
+					textWin.setPosition(sf::Vector2f(180, 200));
+					textWin.setCharacterSize(30);
+					textWin.setStyle(sf::Text::Bold);
+					textWin.setFillColor(sf::Color::Green);
+					window.draw(textWin);
+				}
+				else
+				{
+					sf::Text textLose("YOU LOSE", font);
+					textLose.setPosition(sf::Vector2f(180, 200));
+					textLose.setCharacterSize(30);
+					textLose.setStyle(sf::Text::Bold);
+					textLose.setFillColor(sf::Color::Red);
+					window.draw(textLose);
+				}
 			}
 
 			//-----MOVED
