@@ -196,28 +196,45 @@ void receieveMessage(UdpSocket* socket, string nickname) {
 				}
 
 				else if (header2 == PT_ACKMOVE) {
-					cout << "Received ack" <<  aMoves.size() << endl;
+					//cout << "Received ack" <<  aMoves.size() << endl;
 					int confirmedX, confirmedY, numMove;
 					newPack >> numMove >> confirmedX >> confirmedY;
 					aPlayers[num].SetPosition(confirmedX, confirmedY);
 
 					list<AccumMove>::iterator it;
+
+					bool eraseMoves = false;
+					// 
 					for (it = aMoves.begin(); it != aMoves.end(); ++it)
 					{
+						//Check if the positions are wrong
 						if (it->idMove == numMove) {
-							aMoves.erase(aMoves.begin(), it);
-							cout << "Found, erased!" << endl;
+							if (it->absolute_X != confirmedX || it->absolute_Y != confirmedY) {
+								//cout << "Wrong position, setting to the correct one";
+								eraseMoves = true;
+							}
+						}
+
+						if (it->idMove <= numMove) {
+							//cout << "Before erase: " << aMoves.size() << endl;
+							aMoves.erase(it);
+							//cout << "Found, erased: " << aMoves.size() << endl;
 							break;
 						}
-						else {}
+
+						if (eraseMoves) {
+							if (it->idMove >= numMove) {
+								aMoves.erase(it);
+							}
+						}
 					}
 				}
 
 				else if (header2 == PT_MOVE) {
-					cout << "Move" << aMoves.size() << endl;
 					int playerNum;
 					int pX, pY;
 					newPack >> playerNum >> pX >> pY;
+					cout << "Move the player: " << playerNum <<  " Size: " << aMoves.size() << endl;
 					aPlayers[playerNum].SetPosition(pX, pY);
 					//cout << "Recibo la confirmacion: " << pX << " " << pY << endl;
 				}
@@ -546,7 +563,8 @@ int main()
 			//-----MOVED
 			if ((clockMove.getElapsedTime().asMilliseconds() >= 200 && (deltaX != 0 || deltaY != 0)) && startGame) {
 				cout << "Move detected" << endl;
-				AccumMove acc(posX, num, deltaX, deltaY, aPlayers[num].GetX(), aPlayers[num].GetY());
+				idMove++;
+				AccumMove acc(idMove, num, deltaX, deltaY, aPlayers[num].GetX(), aPlayers[num].GetY());
 				deltaX = 0;
 				deltaY = 0;
 				aMoves.push_back(acc);

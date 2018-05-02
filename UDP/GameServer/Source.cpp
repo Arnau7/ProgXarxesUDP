@@ -191,6 +191,7 @@ void receieveMessage(UdpSocket* socket) {
 					}
 					else {
 						for (int i = 0; i < 4; i++) {
+							cout << "Playernum: " << playerNum << ", i: " << i << endl;
 							if (playerNum != i) {
 								int8_t header2 = ((int8_t)PacketType::PT_MOVE);
 								pckSend << headerPos << header2 << playerNum << posX << posY;
@@ -198,9 +199,10 @@ void receieveMessage(UdpSocket* socket) {
 							}
 							else {
 								cout << "Send ACK to " << i << endl;
+								Packet ackPacket;
 								int8_t headerACK = ((int8_t)PacketType::PT_ACKMOVE);
-								pckSend << headerPos << headerACK << idMove << posX << posY;
-								socket->send(pckSend, aClientsDir[playerNum].ip, aClientsDir[playerNum].port);
+								ackPacket << headerPos << headerACK << idMove << posX << posY;
+								socket->send(ackPacket, aClientsDir[i].ip, aClientsDir[i].port);
 							}
 						}
 					}
