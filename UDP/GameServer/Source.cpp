@@ -242,9 +242,18 @@ int main()
 					{
 						serverSocket->send(packPing, aClientsDir[i].ip, aClientsDir[i].port);
 						aPlayers[i].testPing++;
-						if (aPlayers[i].testPing >= 3)
-						{
-							cout << "Player disconnected: " << i << endl;
+						if (aPlayers[i].online) { // si aquest player estava online
+							if (aPlayers[i].testPing >= 3) //té 3 avisos acumulats (fins a 15 segons) informem als clients
+							{
+								Packet pckDc;
+								int8_t headerDc = (int8_t)PacketType::PT_DISCONNECT;
+								pckDc << headerDc << aPlayers[i].GetId();
+								cout << "Player disconnected" << endl;
+								for (int i = 0; i < 4; i++) {
+									serverSocket->send(pckDc, aClientsDir[i].ip, aClientsDir[i].port);
+								}
+								aPlayers[i].online = false;
+							}
 						}
 					}
 					clockPing.restart();

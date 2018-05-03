@@ -13,7 +13,7 @@ class PlayerInfo
 public:
 	int testPing;
 	int coins;
-	bool win;
+	bool win, online;
 	std::string nickname;
 	PlayerInfo();
 	PlayerInfo(int _id, std::string _nickname);

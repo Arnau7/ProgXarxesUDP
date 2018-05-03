@@ -14,6 +14,7 @@ PlayerInfo::PlayerInfo(int _id, std::string _nickname)
 	testPing = 0;
 	coins = 0;
 	win = false;
+	online = true;
 }
 
 void PlayerInfo::SetPosition(int _x, int _y) 
@@ -39,4 +40,5 @@ int PlayerInfo::GetY()
 
 PlayerInfo::~PlayerInfo()
 {
+	
 }

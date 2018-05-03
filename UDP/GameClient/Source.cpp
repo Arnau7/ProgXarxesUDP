@@ -32,38 +32,13 @@
 #define RADIO_AVATAR 25.f
 #define OFFSET_AVATAR 5
 
-
-enum TipoProceso { RATON, GATO, PADRE };
 char tablero[SIZE_TABLERO];
 
 int posX, posY, posP2X, posP2Y, posP3X, posP3Y, posP4X, posP4Y;
 
-/**
-* Si vale true --> nos permite marcar casilla con el mouse
-* Si vale false --> No podemos interactuar con el tablero y aparece un letrero de "esperando"
-*/
 bool startGame = false;
 bool gameOver = false;
-
-/**
-* Ahora mismo no tiene efecto, pero luego lo necesitarás para validar los movimientos
-* en función de si eres el gato o el ratón.
-*/
-TipoProceso quienSoy = TipoProceso::RATON;
-
-
-
-/**
-* Cuando el jugador clica en la pantalla, se nos da una coordenada del 0 al 512.
-* Esta función la transforma a una posición entre el 0 y el 7
-*/
-sf::Vector2f TransformaCoordenadaACasilla(int _x, int _y)
-{
-	float xCasilla = _x / LADO_CASILLA;
-	float yCasilla = _y / LADO_CASILLA;
-	sf::Vector2f casilla(xCasilla, yCasilla);
-	return casilla;
-}
+bool playerDisconnected = false;
 
 /**
 * Si guardamos las posiciones de las piezas con valores del 0 al 7,
@@ -73,11 +48,6 @@ sf::Vector2f BoardToWindows(sf::Vector2f _position)
 {
 	return sf::Vector2f(_position.x*LADO_CASILLA + OFFSET_AVATAR, _position.y*LADO_CASILLA + OFFSET_AVATAR);
 }
-
-/**
-* Contiene el código SFML que captura el evento del clic del mouse y el código que pinta por pantalla
-*/
-
 
 using namespace std;
 using namespace sf;
@@ -108,7 +78,7 @@ int num; //USED as client local global player ID
 int coinX = 0;
 int coinY = 0;
 list<AccumMove>aMoves;
-Clock clockMoves;
+Clock clockMoves, clockDc;
 int idMove = 0;
 int playersOnline = 0;
 
@@ -275,7 +245,15 @@ void receieveMessage(UdpSocket* socket, string nickname) {
 				socket->send(pckPing, serverIp, port);
 				//cout << "Ping sent back" << endl;
 			}
-
+			else if (header == PT_DISCONNECT)
+			{
+				int idDc = 0;
+				newPack >> idDc;
+				aPlayers[idDc].online = false;
+				playerDisconnected = true;
+				cout << "Player: " << idDc << " disconnected" << endl;
+				clockDc.restart();
+			}
 		}
 	}
 }
@@ -422,6 +400,31 @@ int main()
 			}
 			window.clear();
 
+			if (playerDisconnected) 
+			{
+				cout << "Disconnection text" << endl;
+				sf::Font font;
+				std::string pathFont = "arial.ttf";
+				if (!font.loadFromFile(pathFont))
+				{
+					std::cout << "No se pudo cargar la fuente" << std::endl;
+				}
+
+				sf::Text textDisconnected("Player disconnected", font);
+				textDisconnected.setPosition(sf::Vector2f(180, 50));
+				textDisconnected.setCharacterSize(18);
+				textDisconnected.setStyle(sf::Text::Bold);
+				textDisconnected.setFillColor(sf::Color::Magenta);
+				window.draw(textDisconnected);
+
+				if (clockDc.getElapsedTime().asSeconds() >= 3)
+				{
+					cout << "Clock DC restart" << endl;
+					playerDisconnected = false;
+					clockDc.restart();
+				}
+			}
+
 			if (!startGame)
 			{
 
@@ -475,7 +478,8 @@ int main()
 							posPlayer0 = BoardToWindows(posPlayer0);
 							shapePlayer0.setPosition(posPlayer0);
 
-							window.draw(shapePlayer0);
+							if(aPlayers[i].online)
+								window.draw(shapePlayer0);
 						}
 						else if (i == 1) {
 							//Player Draw
@@ -486,7 +490,8 @@ int main()
 							posPlayer1 = BoardToWindows(posPlayer1);
 							shapePlayer1.setPosition(posPlayer1);
 
-							window.draw(shapePlayer1);
+							if (aPlayers[i].online)
+								window.draw(shapePlayer1);
 						}
 						else if (i == 2) {
 							//Player Draw
@@ -497,7 +502,8 @@ int main()
 							posPlayer2 = BoardToWindows(posPlayer2);
 							shapePlayer2.setPosition(posPlayer2);
 
-							window.draw(shapePlayer2);
+							if (aPlayers[i].online)
+								window.draw(shapePlayer2);
 						}
 						else if (i == 3) {
 							//Player Draw
@@ -508,7 +514,8 @@ int main()
 							posPlayer3 = BoardToWindows(posPlayer3);
 							shapePlayer3.setPosition(posPlayer3);
 
-							window.draw(shapePlayer3);
+							if (aPlayers[i].online)
+								window.draw(shapePlayer3);
 						}
 					}
 
