@@ -4,6 +4,8 @@
 #include <SFML\Network.hpp>
 #include <thread>
 #include <PlayerInfo.h>
+#include <AccumMove.h>
+#include <list>
 
 using namespace std;
 using namespace sf;
@@ -39,6 +41,7 @@ public:
 
 vector<Direction> aClientsDir;
 map<int, PlayerInfo> aPlayers;
+list<AccumMove> aMoves;
 int playersOnline = 0;
 int coinX = 0;
 int coinY = 0;
@@ -155,10 +158,33 @@ void receieveMessage(UdpSocket* socket) {
 				if (posX >= 9)		{posX = 8;}
 				if (posY >= 9)		{posY = 8;}
 
+				AccumMove acc(idMove, playerNum, deltaX, deltaY, posX, posY);
+				int found = false;
+				list<AccumMove>::iterator it;
+
+				/*for (it = aMoves.begin(); it != aMoves.end(); ++it)
+				{
+					if (it->idPlayer == playerNum) {
+						cout << "Values before merge: Pos: " << it->absolute_X << ", " << it->absolute_Y << " IdMove: " << it->idMove << " Delta: " << it->delta_Xs << ", " << it->delta_Ys << endl;
+						it->absolute_X = posX;
+						it->absolute_Y = posY;
+						it->idMove = idMove;
+						it->delta_Xs += deltaX;
+						it->delta_Ys += deltaY;
+						cout << "Values after merge: Pos: " << it->absolute_X << ", " << it->absolute_Y << " IdMove: " << it->idMove << " Delta: " << it->delta_Xs << ", " << it->delta_Ys << endl;
+						found = true;
+					}
+					else {}
+				}*/
+				
+				if (!found) {
+					aMoves.push_back(acc);
+				}
+
 				//COMPROVAR POSICIÓ PLAYER == MONEDA
 
 				//std::cout << "Se intenta la pos " << posX << " " << posY << std::endl;
-				if ((posX >= 0 && posX <= 8) && (posY >= 0 && posY <= 8))
+				/*if ((posX >= 0 && posX <= 8) && (posY >= 0 && posY <= 8))
 				{
 					int8_t headerPos = ((int8_t)PacketType::PT_POSITION);
 					//std::cout << "Se confirma la pos " << posX << " " << posY << std::endl;
@@ -206,7 +232,7 @@ void receieveMessage(UdpSocket* socket) {
 							}
 						}
 					}
-				}
+				}*/
 			}
 			else if (header == PacketType::PT_PING) 
 			{
@@ -226,6 +252,7 @@ int main()
 	serverSocket->bind(50000);
 	Packet pack;
 	Clock clockPing;
+	Clock clockMove;
 
 	thread rM(receieveMessage, serverSocket);
 
@@ -257,6 +284,64 @@ int main()
 						}
 					}
 					clockPing.restart();
+				}
+
+				if (clockMove.getElapsedTime().asSeconds() >= 3) {
+					list<AccumMove>::iterator it;
+					cout << "Check" << endl;
+					if (aMoves.size() > 0) {
+						cout << "Found moves" << endl;
+						for (it = aMoves.begin(); it != aMoves.end(); ++it)
+						{
+							if ((it->absolute_X >= 0 && it->absolute_X <= 8) && (it->absolute_Y >= 0 && it->absolute_Y <= 8)) {
+								int8_t headerPos = ((int8_t)PacketType::PT_POSITION);
+								sf::Packet pckSend;
+								if (it->absolute_X == coinX && it->absolute_Y == coinY) {
+									int8_t header2 = (int8_t)PacketType::PT_COIN;
+									pckSend << headerPos << header2 << it->idPlayer << it->absolute_X << it->absolute_Y;
+									NewCoinPosition();
+									pckSend << coinX << coinY;
+									aPlayers[it->idPlayer].coins++;
+									//IF PLAYER WINS
+									if (aPlayers[it->idPlayer].coins >= 3) {
+										int8_t header3 = (int8_t)PacketType::PT_WIN;
+										pckSend << header3 << it->idPlayer;
+										for (int i = 0; i < 4; i++) {
+											serverSocket->send(pckSend, aClientsDir[i].ip, aClientsDir[i].port);
+										}
+									}
+									//IF NO PLAYER WINS
+									else {
+										int8_t header3 = (int8_t)PacketType::PT_PLAYING;
+										pckSend << header3;
+										for (int i = 0; i < 4; i++) {
+											serverSocket->send(pckSend, aClientsDir[i].ip, aClientsDir[i].port);
+										}
+									}
+								}
+
+								else {
+									for (int i = 0; i < 4; i++) {
+										//cout << "Playernum: " << it->idPlayer << ", i: " << i << endl;
+										if (it->idPlayer != i) {
+											int8_t header2 = ((int8_t)PacketType::PT_MOVE);
+											pckSend << headerPos << header2 << it->idPlayer << it->absolute_X << it->absolute_Y;
+											serverSocket->send(pckSend, aClientsDir[i].ip, aClientsDir[i].port);
+										}
+										else {
+											cout << "Send ACK to " << i << endl;
+											Packet ackPacket;
+											int8_t headerACK = ((int8_t)PacketType::PT_ACKMOVE);
+											ackPacket << headerPos << headerACK << it->idMove << it->absolute_X << it->absolute_Y;
+											serverSocket->send(ackPacket, aClientsDir[i].ip, aClientsDir[i].port);
+										}
+									}
+								}
+							}
+						}
+						aMoves.clear();
+					}
+					clockMove.restart();
 				}
 			}
 		}
