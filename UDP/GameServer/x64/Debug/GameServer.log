@@ -1,7 +1,8 @@
 ﻿  Source.cpp
-d:\arnau\enti\3r\programació de jocs en xarxa\progxarxesudp\udp\gameserver\source.cpp(105): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-d:\arnau\enti\3r\programació de jocs en xarxa\progxarxesudp\udp\gameserver\source.cpp(112): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-d:\arnau\enti\3r\programació de jocs en xarxa\progxarxesudp\udp\gameserver\source.cpp(119): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-d:\arnau\enti\3r\programació de jocs en xarxa\progxarxesudp\udp\gameserver\source.cpp(177): warning C4244: 'argumento': conversión de 'int' a 'float'; posible pérdida de datos
-d:\arnau\enti\3r\programació de jocs en xarxa\progxarxesudp\udp\gameserver\source.cpp(184): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-  GameServer.vcxproj -> D:\Arnau\ENTI\3r\Programació de jocs en xarxa\ProgXarxesUDP\UDP\x64\Debug\GameServer.exe
+c:\users\miquel\documents\github\platilla_3projects\progxarxesudp\udp\gameserver\source.cpp(109): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
+c:\users\miquel\documents\github\platilla_3projects\progxarxesudp\udp\gameserver\source.cpp(116): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
+c:\users\miquel\documents\github\platilla_3projects\progxarxesudp\udp\gameserver\source.cpp(123): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
+c:\users\miquel\documents\github\platilla_3projects\progxarxesudp\udp\gameserver\source.cpp(187): warning C4244: 'argumento': conversión de 'int' a 'float'; posible pérdida de datos
+c:\users\miquel\documents\github\platilla_3projects\progxarxesudp\udp\gameserver\source.cpp(194): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
+  GameServer.vcxproj -> C:\Users\Miquel\Documents\GitHub\Platilla_3Projects\ProgXarxesUDP\UDP\x64\Debug\GameServer.exe
+  GameServer.vcxproj -> C:\Users\Miquel\Documents\GitHub\Platilla_3Projects\ProgXarxesUDP\UDP\x64\Debug\GameServer.pdb (Partial PDB)

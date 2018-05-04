@@ -70,7 +70,8 @@ enum PacketType
 	PT_WIN = 13,
 	PT_PLAYING = 14, 
 	PT_ACKMOVE = 15,
-	PT_INTERACT = 16
+	PT_INTERACT = 16,
+	PT_ACK = 17
 };
 
 bool playerOnline = false;
@@ -213,6 +214,8 @@ void receieveMessage(UdpSocket* socket, string nickname) {
 			}
 			else if (header == PT_START) 
 			{
+				int idPacket;
+				newPack >> idPacket;
 				for (int i = 0; i < 4; i++) {
 					int pX = 0;
 					int pY = 0;
@@ -237,6 +240,13 @@ void receieveMessage(UdpSocket* socket, string nickname) {
 				
 				newPack >> coinX >> coinY;
 				cout << "Coin position: " << coinX << " , " << coinY << endl;
+
+				Packet ackPack;
+
+				int8_t ackHeader = PacketType::PT_ACK;
+				ackPack << ackHeader << idPacket;
+				socket->send(ackPack, serverIp, port);
+
 				startGame = true;
 			}
 			else if (header == PT_PING) {

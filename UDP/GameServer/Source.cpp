@@ -6,6 +6,7 @@
 #include <PlayerInfo.h>
 #include <AccumMove.h>
 #include <list>
+#include <CriticPack.h>
 
 using namespace std;
 using namespace sf;
@@ -28,7 +29,8 @@ enum PacketType
 	PT_WIN = 13,
 	PT_PLAYING = 14,
 	PT_ACKMOVE = 15,
-	PT_INTERACT = 16
+	PT_INTERACT = 16,
+	PT_ACK = 17
 };
 #define SIZE_TABLERO 121
 #define LADO_CASILLA 57
@@ -52,10 +54,14 @@ public:
 vector<Direction> aClientsDir;
 map<int, PlayerInfo> aPlayers;
 list<AccumMove> aMoves;
+map<int, CriticPack> criticPackets;
+int idCriticPacket;
 int playersOnline = 0;
 int coinX = 0;
 int coinY = 0;
 bool checkInteract = false;
+
+int ackReceived = 0;
 
 void NewCoinPosition() {
 	int randX = rand() % 8*57+5;
@@ -130,7 +136,7 @@ void receieveMessage(UdpSocket* socket) {
 							cout << "All players connected, start!" << endl;
 							Packet pckStart;
 							int8_t headerStart = (int8_t)PacketType::PT_START;
-							pckStart << headerStart;
+							pckStart << headerStart << idCriticPacket;
 							for (map<int, PlayerInfo>::iterator it = aPlayers.begin(); it != aPlayers.end(); ++it) {
 								cout << "ID: " << it->second.GetId() << endl;
 								cout << "Packing position: " << it->second.GetX() << ", " << it->second.GetY() << endl;
@@ -144,9 +150,15 @@ void receieveMessage(UdpSocket* socket) {
 							coinY = 4*57+5;
 							cout << "Coin position: " << coinX << " , " << coinY << endl;
 							pckStart << coinX << coinY;
-							for (int i = 0; i < 4; i++) {
-								socket->send(pckStart, aClientsDir[i].ip, aClientsDir[i].port);
+
+							for (int i = 0; i < playersOnline; i++) {
+								CriticPack critic(idCriticPacket, pckStart, aClientsDir[i].ip, aClientsDir[i].port);
+								criticPackets[critic.idPacket] = critic;
+								idCriticPacket++;
 							}
+
+							cout << "Packets added as critic: " << criticPackets.size() << endl;
+
 						}
 					//}
 					//else {
@@ -263,7 +275,22 @@ void receieveMessage(UdpSocket* socket) {
 				pack >> id;
 				aPlayers[id].testPing = 0;
 			}
-				
+			else if (header == PacketType::PT_ACK)
+			{
+				cout << "Received ACK" << endl;
+				int idPacket;
+				pack >> idPacket;
+				ackReceived++;
+				if (ackReceived == 4)
+				{
+					criticPackets.clear();
+				}
+				//for (auto it = criticPackets.begin(); it != criticPackets.end(); ++it) {
+				//	if (it->first == idPacket) {
+				//		criticPackets.erase(idPacket);
+				//	}
+				//}
+			}
 		}
 	}
 }
@@ -276,6 +303,7 @@ int main()
 	Packet pack;
 	Clock clockPing;
 	Clock clockMove;
+	Clock clockCritics;
 
 	thread rM(receieveMessage, serverSocket);
 
@@ -311,7 +339,7 @@ int main()
 
 				if (clockMove.getElapsedTime().asMilliseconds() >= 100) {
 					list<AccumMove>::iterator it;
-					cout << "Check" << endl;
+					//cout << "Check" << endl;
 					if (aMoves.size() > 0) {
 						cout << "Found moves" << endl;
 						for (it = aMoves.begin(); it != aMoves.end(); ++it)
@@ -369,6 +397,17 @@ int main()
 					}
 					clockMove.restart();
 				}
+
+				if ((clockCritics.getElapsedTime().asMilliseconds() >= 1000))
+				{
+					if (criticPackets.size() > 0) {
+						for (int i = 0; i < criticPackets.size(); i++) {
+							criticPackets[i].sendPacket(serverSocket);
+						}
+						clockCritics.restart();
+					}
+				}
+
 			}
 		}
 	return 0;
