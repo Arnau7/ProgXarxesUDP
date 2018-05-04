@@ -1,7 +1,7 @@
 ﻿  Source.cpp
-d:\arnau\enti\3r\programació de jocs en xarxa\progxarxesudp\udp\gameserver\source.cpp(103): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-d:\arnau\enti\3r\programació de jocs en xarxa\progxarxesudp\udp\gameserver\source.cpp(110): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-d:\arnau\enti\3r\programació de jocs en xarxa\progxarxesudp\udp\gameserver\source.cpp(117): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-d:\arnau\enti\3r\programació de jocs en xarxa\progxarxesudp\udp\gameserver\source.cpp(172): warning C4244: 'argumento': conversión de 'int' a 'float'; posible pérdida de datos
-d:\arnau\enti\3r\programació de jocs en xarxa\progxarxesudp\udp\gameserver\source.cpp(179): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
+d:\arnau\enti\3r\programació de jocs en xarxa\progxarxesudp\udp\gameserver\source.cpp(105): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
+d:\arnau\enti\3r\programació de jocs en xarxa\progxarxesudp\udp\gameserver\source.cpp(112): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
+d:\arnau\enti\3r\programació de jocs en xarxa\progxarxesudp\udp\gameserver\source.cpp(119): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
+d:\arnau\enti\3r\programació de jocs en xarxa\progxarxesudp\udp\gameserver\source.cpp(177): warning C4244: 'argumento': conversión de 'int' a 'float'; posible pérdida de datos
+d:\arnau\enti\3r\programació de jocs en xarxa\progxarxesudp\udp\gameserver\source.cpp(184): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
   GameServer.vcxproj -> D:\Arnau\ENTI\3r\Programació de jocs en xarxa\ProgXarxesUDP\UDP\x64\Debug\GameServer.exe

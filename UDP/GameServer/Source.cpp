@@ -27,7 +27,8 @@ enum PacketType
 	PT_PING = 12,
 	PT_WIN = 13,
 	PT_PLAYING = 14,
-	PT_ACKMOVE = 15
+	PT_ACKMOVE = 15,
+	PT_INTERACT = 16
 };
 #define SIZE_TABLERO 121
 #define LADO_CASILLA 57
@@ -54,6 +55,7 @@ list<AccumMove> aMoves;
 int playersOnline = 0;
 int coinX = 0;
 int coinY = 0;
+bool checkInteract = false;
 
 void NewCoinPosition() {
 	int randX = rand() % 8*57+5;
@@ -162,6 +164,9 @@ void receieveMessage(UdpSocket* socket) {
 				else
 					cout << "4 players online, waiting on the queue" << endl;
 				// TODO send warning, server full
+			}
+			else if (header == PacketType::PT_INTERACT) {
+				checkInteract = true;
 			}
 			else if (header == PacketType::PT_MOVE) 
 			{
@@ -304,7 +309,7 @@ int main()
 					clockPing.restart();
 				}
 
-				if (clockMove.getElapsedTime().asMilliseconds() >= 500) {
+				if (clockMove.getElapsedTime().asMilliseconds() >= 100) {
 					list<AccumMove>::iterator it;
 					cout << "Check" << endl;
 					if (aMoves.size() > 0) {
@@ -314,10 +319,11 @@ int main()
 							if ((it->absolute_X >= 0 && it->absolute_X <= 8*57+5) && (it->absolute_Y >= 0 && it->absolute_Y <= 8*57+5)) {
 								int8_t headerPos = ((int8_t)PacketType::PT_POSITION);	
 								sf::Packet pckSend;
-								if ((it->absolute_X >= coinX && it->absolute_X <= coinX+RADIO_AVATAR*2) 
-									&& (it->absolute_Y >= coinY && it->absolute_Y <= coinY+RADIO_AVATAR*2)) {
+								if (checkInteract && ((it->absolute_X >= coinX && it->absolute_X <= coinX+RADIO_AVATAR*2) 
+									&& (it->absolute_Y >= coinY && it->absolute_Y <= coinY+RADIO_AVATAR*2))) {
 									int8_t header2 = (int8_t)PacketType::PT_COIN;
 									pckSend << headerPos << header2 << it->idPlayer << it->absolute_X << it->absolute_Y;
+
 									NewCoinPosition();
 									pckSend << coinX << coinY;
 									aPlayers[it->idPlayer].coins++;
@@ -337,6 +343,7 @@ int main()
 											serverSocket->send(pckSend, aClientsDir[i].ip, aClientsDir[i].port);
 										}
 									}
+									checkInteract = false;
 								}
 
 								else {

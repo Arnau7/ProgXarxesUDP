@@ -69,7 +69,8 @@ enum PacketType
 	PT_PING = 12,
 	PT_WIN = 13,
 	PT_PLAYING = 14, 
-	PT_ACKMOVE = 15
+	PT_ACKMOVE = 15,
+	PT_INTERACT = 16
 };
 
 bool playerOnline = false;
@@ -340,7 +341,17 @@ int main()
 					window.close();
 					break;
 				case sf::Event::KeyPressed:
+					if (event.key.code == sf::Keyboard::Escape) {
+						aSocket->unbind();
+					}
 					if (!gameOver) {
+						if (event.key.code == sf::Keyboard::X) {
+							Packet pckX;
+							int8_t hInteract = (int8_t)PacketType::PT_INTERACT;
+							pckX << hInteract << num;
+							aSocket->send(pckX, SERVER_IP, SERVER_PORT);
+						}
+
 						if (event.key.code == sf::Keyboard::Left)
 						{
 							//int8_t header = (int8_t)PacketType::PT_MOVE;
@@ -446,9 +457,9 @@ int main()
 					std::cout << "No se pudo cargar la fuente" << std::endl;
 				}
 
-				sf::Text textEsperando("Esperando...", font);
+				sf::Text textEsperando("Waiting...\nMove with arrows\nUse 'X' to collect coins", font);
 				textEsperando.setPosition(sf::Vector2f(180, 200));
-				textEsperando.setCharacterSize(30);
+				textEsperando.setCharacterSize(24);
 				textEsperando.setStyle(sf::Text::Bold);
 				textEsperando.setFillColor(sf::Color::Green);
 				window.draw(textEsperando);
