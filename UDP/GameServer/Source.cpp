@@ -97,8 +97,8 @@ void receieveMessage(UdpSocket* socket) {
 						//Top right
 						else if (playersOnline == 1)
 						{
-							Vector2f vec(8*57+5, 0);
-							BoardToWindows(vec);
+							Vector2f vec(8 * 57 + 5, 0);
+							//BoardToWindows(vec);
 							cout << vec.x << vec.y << endl;
 							player.SetPosition(vec.x, vec.y);
 						}
@@ -106,14 +106,14 @@ void receieveMessage(UdpSocket* socket) {
 						else if (playersOnline == 2)
 						{
 							Vector2f vec(0, 8 * 57 + 5);
-							BoardToWindows(vec);
+							//BoardToWindows(vec);
 							player.SetPosition(vec.x, vec.y);
 						}
 						//Bot right
 						else if (playersOnline == 3)
 						{
 							Vector2f vec(8 * 57 + 5, 8 * 57 + 5);
-							BoardToWindows(vec);
+							//BoardToWindows(vec);
 							player.SetPosition(vec.x, vec.y);
 						}
 
@@ -138,8 +138,8 @@ void receieveMessage(UdpSocket* socket) {
 								cout << "Packing position: " << aPlayers[i].GetX() << ", " << aPlayers[i].GetY() << endl;
 								pckStart << aPlayers[i].GetX() << aPlayers[i].GetY();							
 							}*/
-							coinX = 4;
-							coinY = 4;
+							coinX = 4*57+5;
+							coinY = 4*57+5;
 							cout << "Coin position: " << coinX << " , " << coinY << endl;
 							pckStart << coinX << coinY;
 							for (int i = 0; i < 4; i++) {
@@ -312,9 +312,10 @@ int main()
 						for (it = aMoves.begin(); it != aMoves.end(); ++it)
 						{
 							if ((it->absolute_X >= 0 && it->absolute_X <= 8*57+5) && (it->absolute_Y >= 0 && it->absolute_Y <= 8*57+5)) {
-								int8_t headerPos = ((int8_t)PacketType::PT_POSITION);
+								int8_t headerPos = ((int8_t)PacketType::PT_POSITION);	
 								sf::Packet pckSend;
-								if (it->absolute_X == coinX && it->absolute_Y == coinY) {
+								if ((it->absolute_X >= coinX && it->absolute_X <= coinX+RADIO_AVATAR*2) 
+									&& (it->absolute_Y >= coinY && it->absolute_Y <= coinY+RADIO_AVATAR*2)) {
 									int8_t header2 = (int8_t)PacketType::PT_COIN;
 									pckSend << headerPos << header2 << it->idPlayer << it->absolute_X << it->absolute_Y;
 									NewCoinPosition();

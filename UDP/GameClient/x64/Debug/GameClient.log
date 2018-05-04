@@ -1,11 +1,1 @@
-﻿  Source.cpp
-d:\arnau\enti\3r\programació de jocs en xarxa\progxarxesudp\udp\gameclient\source.cpp(31): warning C4005: 'LADO_CASILLA': redefinición de macro
-  d:\arnau\enti\3r\programació de jocs en xarxa\progxarxesudp\udp\gameclient\source.cpp(26): note: vea la definición anterior de 'LADO_CASILLA'
-d:\arnau\enti\3r\programació de jocs en xarxa\progxarxesudp\udp\gameclient\source.cpp(435): warning C4244: 'argumento': conversión de 'int' a 'float'; posible pérdida de datos
-d:\arnau\enti\3r\programació de jocs en xarxa\progxarxesudp\udp\gameclient\source.cpp(463): warning C4244: 'argumento': conversión de 'int' a 'float'; posible pérdida de datos
-d:\arnau\enti\3r\programació de jocs en xarxa\progxarxesudp\udp\gameclient\source.cpp(478): warning C4244: 'argumento': conversión de 'int' a 'float'; posible pérdida de datos
-d:\arnau\enti\3r\programació de jocs en xarxa\progxarxesudp\udp\gameclient\source.cpp(490): warning C4244: 'argumento': conversión de 'int' a 'float'; posible pérdida de datos
-d:\arnau\enti\3r\programació de jocs en xarxa\progxarxesudp\udp\gameclient\source.cpp(502): warning C4244: 'argumento': conversión de 'int' a 'float'; posible pérdida de datos
-d:\arnau\enti\3r\programació de jocs en xarxa\progxarxesudp\udp\gameclient\source.cpp(514): warning C4244: 'argumento': conversión de 'int' a 'float'; posible pérdida de datos
-d:\arnau\enti\3r\programació de jocs en xarxa\progxarxesudp\udp\gameclient\source.cpp(528): warning C4244: 'argumento': conversión de 'int' a 'float'; posible pérdida de datos
-  GameClient.vcxproj -> D:\Arnau\ENTI\3r\Programació de jocs en xarxa\ProgXarxesUDP\UDP\x64\Debug\GameClient.exe
+﻿  GameClient.vcxproj -> D:\Arnau\ENTI\3r\Programació de jocs en xarxa\ProgXarxesUDP\UDP\x64\Debug\GameClient.exe

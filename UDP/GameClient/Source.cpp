@@ -345,7 +345,7 @@ int main()
 						{
 							//int8_t header = (int8_t)PacketType::PT_MOVE;
 							//sf::Packet pckLeft;
-							deltaX -= 1;
+							deltaX -= 15;
 							//cout << "Delta to send: " << deltaX << ", " << deltaY << endl;
 							//AccumMove acc(posX, num, deltaX, deltaY, posX, posY);
 							//aMoves.push_back(acc);
@@ -358,7 +358,7 @@ int main()
 						{
 							//int8_t header = (int8_t)PacketType::PT_MOVE;
 							//sf::Packet pckRight;
-							deltaX += 1;
+							deltaX += 15;
 							//cout << "Delta to send: " << deltaX << ", " << deltaY << endl;
 							//AccumMove acc(posX, num, deltaX, deltaY, posX, posY);
 							//aMoves.push_back(acc);
@@ -371,7 +371,7 @@ int main()
 						{
 							//int8_t header = (int8_t)PacketType::PT_MOVE;
 							//sf::Packet pckUp;
-							deltaY -= 1;
+							deltaY -= 15;
 							//cout << "Delta to send: " << deltaX << ", " << deltaY << endl;
 							//AccumMove acc(posX, num, deltaX, deltaY, posX, posY);
 							//aMoves.push_back(acc);
@@ -383,7 +383,7 @@ int main()
 						{
 							//int8_t header = (int8_t)PacketType::PT_MOVE;
 							//sf::Packet pckDown;
-							deltaY += 1;
+							deltaY += 15;
 							//cout << "Delta to send: " << deltaX << ", " << deltaY << endl;
 							//AccumMove acc(posX, num, deltaX, deltaY, posX, posY);
 							//aMoves.push_back(acc);
@@ -433,7 +433,7 @@ int main()
 				shapePlayer.setFillColor(sf::Color::Green);
 
 				sf::Vector2f posPlayer(posX, posY);
-				cout << posX << posY << endl;
+				//cout << posX << posY << endl;
 				//posPlayer = BoardToWindows(posPlayer);
 				shapePlayer.setPosition(posPlayer);
 
@@ -461,7 +461,7 @@ int main()
 					shapeCoin.setFillColor(sf::Color::Yellow);
 
 					sf::Vector2f posCoin(coinX, coinY);
-					posCoin = BoardToWindows(posCoin);
+					//posCoin = BoardToWindows(posCoin);
 					shapeCoin.setPosition(posCoin);
 
 					window.draw(shapeCoin);
