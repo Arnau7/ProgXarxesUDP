@@ -29,6 +29,15 @@ enum PacketType
 	PT_PLAYING = 14,
 	PT_ACKMOVE = 15
 };
+#define SIZE_TABLERO 121
+#define LADO_CASILLA 57
+#define RADIO_AVATAR 25.f
+#define OFFSET_AVATAR 5
+
+sf::Vector2f BoardToWindows(sf::Vector2f _position)
+{
+	return sf::Vector2f(_position.x*LADO_CASILLA + OFFSET_AVATAR, _position.y*LADO_CASILLA + OFFSET_AVATAR);
+}
 
 struct Direction {
 public:
@@ -47,8 +56,8 @@ int coinX = 0;
 int coinY = 0;
 
 void NewCoinPosition() {
-	int randX = rand() % 8;
-	int randY = rand() % 8;
+	int randX = rand() % 8*57+5;
+	int randY = rand() % 8*57+5;
 	coinX = randX;
 	coinY = randY;
 }
@@ -88,17 +97,24 @@ void receieveMessage(UdpSocket* socket) {
 						//Top right
 						else if (playersOnline == 1)
 						{
-							player.SetPosition(8, 0);
+							Vector2f vec(8*57+5, 0);
+							BoardToWindows(vec);
+							cout << vec.x << vec.y << endl;
+							player.SetPosition(vec.x, vec.y);
 						}
 						//Bot left
 						else if (playersOnline == 2)
 						{
-							player.SetPosition(0, 8);
+							Vector2f vec(0, 8 * 57 + 5);
+							BoardToWindows(vec);
+							player.SetPosition(vec.x, vec.y);
 						}
 						//Bot right
 						else if (playersOnline == 3)
 						{
-							player.SetPosition(8, 8);
+							Vector2f vec(8 * 57 + 5, 8 * 57 + 5);
+							BoardToWindows(vec);
+							player.SetPosition(vec.x, vec.y);
 						}
 
 						aPlayers.insert(pair<int, PlayerInfo>(playersOnline, player));
@@ -153,12 +169,14 @@ void receieveMessage(UdpSocket* socket) {
 				pack >> idMove >> playerNum;
 				int posX, posY, deltaX, deltaY;
 				pack >> deltaX  >> deltaY >> posX >> posY;
-				if (posX <= -1)		{posX = 0;}
-				if (posY <= -1)		{posY = 0;}
-				if (posX >= 9)		{posX = 8;}
-				if (posY >= 9)		{posY = 8;}
+				Vector2f vector(posX, posY);
+				BoardToWindows(vector);
+				if (vector.x <= 0)		{vector.x = 0;}
+				if (vector.y <= 0)		{vector.y = 0;}
+				if (vector.x >= 461)		{vector.x = 461;}
+				if (vector.y >= 461)		{vector.y = 461;}
 
-				AccumMove acc(idMove, playerNum, deltaX, deltaY, posX, posY);
+				AccumMove acc(idMove, playerNum, deltaX, deltaY, vector.x, vector.y);
 				int found = false;
 				list<AccumMove>::iterator it;
 
@@ -286,14 +304,14 @@ int main()
 					clockPing.restart();
 				}
 
-				if (clockMove.getElapsedTime().asSeconds() >= 3) {
+				if (clockMove.getElapsedTime().asMilliseconds() >= 500) {
 					list<AccumMove>::iterator it;
 					cout << "Check" << endl;
 					if (aMoves.size() > 0) {
 						cout << "Found moves" << endl;
 						for (it = aMoves.begin(); it != aMoves.end(); ++it)
 						{
-							if ((it->absolute_X >= 0 && it->absolute_X <= 8) && (it->absolute_Y >= 0 && it->absolute_Y <= 8)) {
+							if ((it->absolute_X >= 0 && it->absolute_X <= 8*57+5) && (it->absolute_Y >= 0 && it->absolute_Y <= 8*57+5)) {
 								int8_t headerPos = ((int8_t)PacketType::PT_POSITION);
 								sf::Packet pckSend;
 								if (it->absolute_X == coinX && it->absolute_Y == coinY) {

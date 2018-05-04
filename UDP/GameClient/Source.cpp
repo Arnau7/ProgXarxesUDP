@@ -433,7 +433,8 @@ int main()
 				shapePlayer.setFillColor(sf::Color::Green);
 
 				sf::Vector2f posPlayer(posX, posY);
-				posPlayer = BoardToWindows(posPlayer);
+				cout << posX << posY << endl;
+				//posPlayer = BoardToWindows(posPlayer);
 				shapePlayer.setPosition(posPlayer);
 
 				window.draw(shapePlayer);
@@ -475,7 +476,7 @@ int main()
 							shapePlayer0.setFillColor(sf::Color::Red);
 
 							sf::Vector2f posPlayer0(aPlayers[i].GetX(), aPlayers[i].GetY());
-							posPlayer0 = BoardToWindows(posPlayer0);
+							//posPlayer0 = BoardToWindows(posPlayer0);
 							shapePlayer0.setPosition(posPlayer0);
 
 							if(aPlayers[i].online)
@@ -487,7 +488,7 @@ int main()
 							shapePlayer1.setFillColor(sf::Color::Red);
 
 							sf::Vector2f posPlayer1(aPlayers[i].GetX(), aPlayers[i].GetY());
-							posPlayer1 = BoardToWindows(posPlayer1);
+							//posPlayer1 = BoardToWindows(posPlayer1);
 							shapePlayer1.setPosition(posPlayer1);
 
 							if (aPlayers[i].online)
@@ -499,7 +500,7 @@ int main()
 							shapePlayer2.setFillColor(sf::Color::Red);
 
 							sf::Vector2f posPlayer2(aPlayers[i].GetX(), aPlayers[i].GetY());
-							posPlayer2 = BoardToWindows(posPlayer2);
+							//posPlayer2 = BoardToWindows(posPlayer2);
 							shapePlayer2.setPosition(posPlayer2);
 
 							if (aPlayers[i].online)
@@ -511,7 +512,7 @@ int main()
 							shapePlayer3.setFillColor(sf::Color::Red);
 
 							sf::Vector2f posPlayer3(aPlayers[i].GetX(), aPlayers[i].GetY());
-							posPlayer3 = BoardToWindows(posPlayer3);
+							//posPlayer3 = BoardToWindows(posPlayer3);
 							shapePlayer3.setPosition(posPlayer3);
 
 							if (aPlayers[i].online)
@@ -525,7 +526,7 @@ int main()
 						shapePlayer.setFillColor(sf::Color::Green);
 
 						sf::Vector2f posPlayer(aPlayers[i].GetX(), aPlayers[i].GetY());
-						posPlayer = BoardToWindows(posPlayer);
+						//posPlayer = BoardToWindows(posPlayer);
 						shapePlayer.setPosition(posPlayer);
 
 						window.draw(shapePlayer);
