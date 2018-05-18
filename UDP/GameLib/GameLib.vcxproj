@@ -145,6 +145,7 @@
   <ItemGroup>
     <ClInclude Include="AccumMove.h" />
     <ClInclude Include="CriticPack.h" />
+    <ClInclude Include="Game.h" />
     <ClInclude Include="InputMemoryBitStream.h" />
     <ClInclude Include="InputMemoryStream.h" />
     <ClInclude Include="OutputMemoryBitStream.h" />
@@ -154,6 +155,7 @@
   <ItemGroup>
     <ClCompile Include="AccumMove.cpp" />
     <ClCompile Include="CriticPack.cpp" />
+    <ClCompile Include="Game.cpp" />
     <ClCompile Include="PlayerInfo.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
