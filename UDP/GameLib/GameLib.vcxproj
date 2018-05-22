@@ -70,8 +70,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(Solutiondir)\deps64\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
-    <LibraryPath>$(Solutiondir)\deps64\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64</LibraryPath>
+    <IncludePath>$(Solutiondir)\deps64\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(Solutiondir)\deps64\mysql\include</IncludePath>
+    <LibraryPath>$(Solutiondir)\deps64\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;$(Solutiondir)\deps64\mysql\lib</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(Solutiondir)\deps64\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
@@ -145,6 +145,7 @@
   <ItemGroup>
     <ClInclude Include="AccumMove.h" />
     <ClInclude Include="CriticPack.h" />
+    <ClInclude Include="DBManager.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="InputMemoryBitStream.h" />
     <ClInclude Include="InputMemoryStream.h" />
@@ -155,6 +156,7 @@
   <ItemGroup>
     <ClCompile Include="AccumMove.cpp" />
     <ClCompile Include="CriticPack.cpp" />
+    <ClCompile Include="DBManager.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="PlayerInfo.cpp" />
   </ItemGroup>

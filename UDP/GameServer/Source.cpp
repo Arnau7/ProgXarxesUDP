@@ -7,6 +7,11 @@
 #include <AccumMove.h>
 #include <list>
 #include <CriticPack.h>
+#include <mysql_connection.h>
+#include <cppconn\driver.h>
+#include <cppconn\resultset.h>
+#include <cppconn\statement.h>
+#include <cppconn\exception.h>
 
 using namespace std;
 using namespace sf;
@@ -297,6 +302,11 @@ void receieveMessage(UdpSocket* socket) {
 
 int main()
 {
+	sql::Driver* driver;
+	sql::Connection* con;
+	sql::Statement* stmt;
+
+
 	cout << "Server online" << endl;
 	UdpSocket* serverSocket = new UdpSocket;
 	serverSocket->bind(50000);
