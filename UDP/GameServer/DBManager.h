@@ -25,7 +25,7 @@ public:
 	bool AltaCuenta(string, string);
 	bool Login(string, string);
 	bool AddMatch(int);
-	void CloseSession(int);
+	void CloseSession();
 	DBManager();
 	~DBManager();
 };
