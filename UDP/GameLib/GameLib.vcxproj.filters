@@ -42,9 +42,6 @@
     <ClInclude Include="Game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DBManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PlayerInfo.cpp">
@@ -57,9 +54,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Game.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DBManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

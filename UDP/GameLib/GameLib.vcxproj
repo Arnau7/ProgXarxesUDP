@@ -145,7 +145,6 @@
   <ItemGroup>
     <ClInclude Include="AccumMove.h" />
     <ClInclude Include="CriticPack.h" />
-    <ClInclude Include="DBManager.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="InputMemoryBitStream.h" />
     <ClInclude Include="InputMemoryStream.h" />
@@ -156,7 +155,6 @@
   <ItemGroup>
     <ClCompile Include="AccumMove.cpp" />
     <ClCompile Include="CriticPack.cpp" />
-    <ClCompile Include="DBManager.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="PlayerInfo.cpp" />
   </ItemGroup>

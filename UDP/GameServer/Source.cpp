@@ -16,6 +16,11 @@
 using namespace std;
 using namespace sf;
 
+#define SIZE_TABLERO 121
+#define LADO_CASILLA 57
+#define RADIO_AVATAR 25.f
+#define OFFSET_AVATAR 5
+
 enum PacketType
 {
 	PT_EMPTY = 0,
@@ -37,10 +42,6 @@ enum PacketType
 	PT_INTERACT = 16,
 	PT_ACK = 17
 };
-#define SIZE_TABLERO 121
-#define LADO_CASILLA 57
-#define RADIO_AVATAR 25.f
-#define OFFSET_AVATAR 5
 
 sf::Vector2f BoardToWindows(sf::Vector2f _position)
 {
