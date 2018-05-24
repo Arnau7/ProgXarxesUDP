@@ -12,6 +12,7 @@
 #include <cppconn\resultset.h>
 #include <cppconn\statement.h>
 #include <cppconn\exception.h>
+#include "DBManager.h"
 
 using namespace std;
 using namespace sf;
@@ -303,10 +304,10 @@ void receieveMessage(UdpSocket* socket) {
 
 int main()
 {
+	DBManager* dbm = new DBManager();
 	sql::Driver* driver;
 	sql::Connection* con;
 	sql::Statement* stmt;
-
 
 	cout << "Server online" << endl;
 	UdpSocket* serverSocket = new UdpSocket;

@@ -1,8 +1,15 @@
-﻿  Source.cpp
-c:\users\miquel\documents\github\platilla_3projects\progxarxesudp\udp\gameserver\source.cpp(109): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-c:\users\miquel\documents\github\platilla_3projects\progxarxesudp\udp\gameserver\source.cpp(116): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-c:\users\miquel\documents\github\platilla_3projects\progxarxesudp\udp\gameserver\source.cpp(123): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-c:\users\miquel\documents\github\platilla_3projects\progxarxesudp\udp\gameserver\source.cpp(187): warning C4244: 'argumento': conversión de 'int' a 'float'; posible pérdida de datos
-c:\users\miquel\documents\github\platilla_3projects\progxarxesudp\udp\gameserver\source.cpp(194): warning C4244: 'argumento': conversión de 'float' a 'int'; posible pérdida de datos
-  GameServer.vcxproj -> C:\Users\Miquel\Documents\GitHub\Platilla_3Projects\ProgXarxesUDP\UDP\x64\Debug\GameServer.exe
-  GameServer.vcxproj -> C:\Users\Miquel\Documents\GitHub\Platilla_3Projects\ProgXarxesUDP\UDP\x64\Debug\GameServer.pdb (Partial PDB)
+﻿  DBManager.cpp
+c:\users\aruiz\documents\github\progxarxesudp\udp\deps64\mysql\include\cppconn\sqlstring.h(39): warning C4251: 'sql::SQLString::realStr': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' needs to have dll-interface to be used by clients of class 'sql::SQLString'
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.11.25503\include\xstring(4079): note: see declaration of 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'
+c:\users\aruiz\documents\github\progxarxesudp\udp\deps64\mysql\include\cppconn\exception.h(61): warning C4251: 'sql::SQLException::sql_state': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' needs to have dll-interface to be used by clients of class 'sql::SQLException'
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.11.25503\include\xstring(4079): note: see declaration of 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'
+c:\users\aruiz\documents\github\progxarxesudp\udp\deps64\mysql\include\cppconn\exception.h(145): warning C4251: 'sql::SQLUnsupportedOptionException::option': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' needs to have dll-interface to be used by clients of struct 'sql::SQLUnsupportedOptionException'
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.11.25503\include\xstring(4079): note: see declaration of 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'
+  Unknown compiler version - please run the configure tests and report the results
+c:\users\aruiz\documents\github\progxarxesudp\udp\deps64\mysql\include\mysql_connection.h(175): warning C4251: 'sql::mysql::MySQL_Connection::proxy': class 'boost::shared_ptr<sql::mysql::NativeAPI::NativeConnectionWrapper>' needs to have dll-interface to be used by clients of class 'sql::mysql::MySQL_Connection'
+  c:\users\aruiz\documents\github\progxarxesudp\udp\deps64\mysql\include\mysql_connection.h(175): note: see declaration of 'boost::shared_ptr<sql::mysql::NativeAPI::NativeConnectionWrapper>'
+c:\users\aruiz\documents\github\progxarxesudp\udp\deps64\mysql\include\mysql_connection.h(179): warning C4251: 'sql::mysql::MySQL_Connection::service': class 'boost::scoped_ptr<sql::mysql::MySQL_Statement>' needs to have dll-interface to be used by clients of class 'sql::mysql::MySQL_Connection'
+  c:\users\aruiz\documents\github\progxarxesudp\udp\deps64\mysql\include\mysql_connection.h(179): note: see declaration of 'boost::scoped_ptr<sql::mysql::MySQL_Statement>'
+c:\users\aruiz\documents\github\progxarxesudp\udp\deps64\mysql\include\mysql_connection.h(181): warning C4251: 'sql::mysql::MySQL_Connection::intern': class 'boost::scoped_ptr<sql::mysql::MySQL_ConnectionData>' needs to have dll-interface to be used by clients of class 'sql::mysql::MySQL_Connection'
+  c:\users\aruiz\documents\github\progxarxesudp\udp\deps64\mysql\include\mysql_connection.h(181): note: see declaration of 'boost::scoped_ptr<sql::mysql::MySQL_ConnectionData>'
+LINK : fatal error LNK1104: cannot open file 'mysqlcppconn.lib'

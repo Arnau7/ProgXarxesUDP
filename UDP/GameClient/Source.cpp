@@ -295,8 +295,28 @@ void SendMoves(UdpSocket* socket) {
 int main()
 {
 	string nickname = "No Nickname";
-	cout << "Hello new player! Introduce your name please: ";
-	cin >> nickname;
+	string pwd = "";
+	int enterMode = 0;
+	cout << "Use '1' to Log in OR use '2' to Register" << endl;
+	cin >> enterMode;
+	if (enterMode == 1) {
+		cout << "Introduce your username: " << endl;
+		cin >> nickname;
+		cout << "Introduce your password: " << endl;
+		cin >> pwd;
+	}
+	else if (enterMode == 2) {
+		cout << "Pick your username: " << endl;
+		cin >> nickname;
+		cout << "Choose your password: " << endl;
+		cin >> pwd;
+	}
+	else {
+		cout << "Error" << endl;
+	}
+
+	//cout << "Hello new player! Introduce your name please: ";
+	//cin >> nickname;
 
 	IpAddress serverIp = SERVER_IP;
 	unsigned short port = SERVER_PORT;
